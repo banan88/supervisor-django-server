@@ -1,0 +1,56 @@
+*{
+	outline: dotted 1px red;
+}
+
+div.content{
+	background-color: yellow;
+	width: 1000px;
+	border: 3px dashed blue;
+	margin: 0 auto;
+	overflow: auto;
+}
+
+div#map{
+	float:left;
+	background-color: lightgray;
+	width: 400px;
+	height: 400px;
+}
+
+div#right{
+	float: right;
+	
+}
+
+div#third{
+	width: 200px;
+	height: 600px;
+	float: left;
+	margin: 0 5%;
+}
+
+div#panel{
+	text-align: center;
+	width: 400px;
+	height: 400px;
+	background-color: lightblue;
+}
+
+div#details{
+	text-align: center;
+	width: 300px;
+	height: 150px;
+	background-color: lightgreen;
+}
+
+div#header{
+	text-align: center;
+    background-color: gray;
+}
+
+div#footer{
+	text-align: center;
+    background-color: gray;
+    clear: both;
+	margin: 0 auto;
+}
