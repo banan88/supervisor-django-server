@@ -36,15 +36,29 @@ var ajax = {
 		         }
 			});
 		},
+		
+		cancelTask: function(task_id) { 
+			$.ajax({ type: "POST",   
+		         url: "/cancel_task/",
+		         async: true,
+		         data: task_id,
+		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
+		         success : function(text)
+		         {
+		        	alert(text);
+		         }
+			});
+		},
 }
 
 $(document).ready(function(){
 	var a = { 
 		fuser : 1,
-		lat : 192.1414,
+		lat : 12.1414,
 		lon : 14.1414,
 		name : "raz",
 		desc : "opis",
 	};
-	ajax.createTask(a);
+	var b = { id : 4};
+	ajax.cancelTask(b);
 });

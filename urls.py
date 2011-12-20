@@ -11,4 +11,5 @@ urlpatterns = patterns('',
     (r'^login/$',  login, {'template_name': 'login.html'}),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^create_task/$', 'main_app.views.createTask'),
+    url(r'^cancel_task/$', 'main_app.views.cancelTask'),
 )

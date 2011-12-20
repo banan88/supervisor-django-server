@@ -29,12 +29,12 @@ def validateLon(value):
     return value
 
 def index(request):
-    return render_to_response('index.html', {}, context_instance = RequestContext(request))
+    return render_to_response("index.html", {}, context_instance = RequestContext(request))
     
 
 def check_updates(request):
-    json = simplejson.dumps({'a':123})
-    return HttpResponse(json, mimetype = 'application/json')
+    json = simplejson.dumps({"a":123})
+    return HttpResponse(json, mimetype = "application/json")
 
 #tworzenie zadania, edycja zadania (zmiana stanu/parametrow)
 
@@ -42,7 +42,7 @@ def check_updates(request):
 def createTask(request):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
-    if request.is_ajax() and request.method == 'POST':
+    if request.is_ajax() and request.method == "POST":
         json = request.POST
         try:
             fuser = json.__getitem__("fuser")
@@ -60,7 +60,7 @@ def createTask(request):
 
             task.latitude = validateLat(lat)
             task.longitude = validateLon(lon)
-            task.state = '1'
+            task.state = "1"
             task.name = name
             task.description = desc
             task.supervisor = request.user
@@ -69,4 +69,30 @@ def createTask(request):
         task.save()
         return HttpResponse(task)
     else:
-        return HttpResponse(status = 400) #bad request header
+        return HttpResponse(status = 400)
+    
+def cancelTask(request):
+    if not request.user.is_authenticated():
+        return HttpResponse(status = 401)
+    if request.is_ajax() and request.method == "POST":
+        json = request.POST
+        try:
+            id = json.__getitem__("id")
+            try:
+                task = Task.objects.get(pk = id)
+            except Task.DoesNotExist:
+                raise KeyError
+        except KeyError:
+            return HttpResponse(status = 400)
+        if task.supervisor != request.user:
+            return HttpResponse(status = 401)
+        task.state = "0"
+        task.save()
+        print task.state
+        return HttpResponse(status = 200) 
+    
+def getActiveTasks(request):
+    pass #to do  
+            
+            
+        

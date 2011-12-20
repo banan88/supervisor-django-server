@@ -23,10 +23,10 @@ class FieldUserProfile(models.Model):
 
 class Task(models.Model):                                                       #klienci korzystaja w swoich bazach z id obiektow tej klasy
     STATES = (
-              ('done', '3'),                                                    #wykonane
-              ('current', '2'),                                                 #obecnie wykonywane
-              ('pending', '1'),                                                 #w kolejce u pracownika terenowego
-              ('cancelled', '0'),                                               #anulowane przez nadzorce                                             #nieprzypisane pracownikowi
+              ('3', 'done'),                                                    #wykonane
+              ('2', 'current'),                                                 #obecnie wykonywane
+              ('1', 'pending'),                                                 #w kolejce u pracownika terenowego
+              ('0', 'cancelled'),                                               #anulowane przez nadzorce                                             #nieprzypisane pracownikowi
               )
     fieldUser = models.ForeignKey(User, related_name = 'fielduser_set') 
     latitude = models.FloatField()
@@ -41,6 +41,7 @@ class Task(models.Model):                                                       
     supervisor = models.ForeignKey(User, related_name = 'user_set')                                        #nadzorca
     version = models.IntegerField(default = 0)                   #na podstawie tej wartosci przeprowadzana jest synchronizacja
     last_synced = models.DateTimeField(blank = True, null = True)
+    #importance = models.IntegerField(default = 0)
     
     def __unicode__(self):
         return self.name + " " + str(self.latitude) + " " + str(self.longitude)
