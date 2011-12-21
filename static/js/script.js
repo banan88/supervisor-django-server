@@ -49,6 +49,18 @@ var ajax = {
 		         }
 			});
 		},
+		
+		getUserTasks: function(field_user_id) {
+			$.ajax({ type: "GET",   
+		         url: "/get_user_tasks/" + field_user_id + "/",
+		         async: true,
+		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
+		         success : function(text)
+		         {
+		        	alert(text);
+		         }
+			});
+		},
 }
 
 $(document).ready(function(){
@@ -60,5 +72,5 @@ $(document).ready(function(){
 		desc : "opis",
 	};
 	var b = { id : 4};
-	ajax.cancelTask(b);
+	ajax.getUserTasks(1);
 });

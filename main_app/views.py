@@ -3,9 +3,9 @@ from django.template.loader import render_to_string
 from django.template import loader
 from django.template.context import RequestContext
 from django.template import Context, Template
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt        
+    
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -65,11 +65,10 @@ def createTask(request):
             task.description = desc
             task.supervisor = request.user
         except KeyError:
-             return HttpResponse(status = 400)
+            return HttpResponse(status = 400)
         task.save()
-        return HttpResponse(task)
-    else:
-        return HttpResponse(status = 400)
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400)
     
 def cancelTask(request):
     if not request.user.is_authenticated():
@@ -89,10 +88,33 @@ def cancelTask(request):
         task.state = "0"
         task.save()
         print task.state
-        return HttpResponse(status = 200) 
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400) 
     
-def getActiveTasks(request):
-    pass #to do  
+#zadania dla danego uzytkownika terenowego (bez wzgledu na stan i to czy ten supervisor cos mu przydzielil)
+    
+def getUserTasks(request, field_user_id):
+    if not request.user.is_authenticated():
+        return HttpResponse(status = 401)
+    if request.is_ajax() and request.method == "GET":
+        try:
+            print 1
+            user = User.objects.get(pk = field_user_id)
+            print 2
+            try:
+                user.fielduserprofile #https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users
+            except FieldUserProfile.DoesNotExist:
+                print 3
+                pass
+                #return HttpResponse(status = 400)
+        except User.DoesNotExist:
+            return HttpResponse(status = 400)
+        print "ok"
+        tasks = Task.objects.filter(fieldUser = user)
+        tasks = dict([(task.pk, {"name" : task.name}) for task in tasks]) #all task params
+        #json = simplejson.dump
+        print tasks
+        return HttpResponse(status = 200) 
             
             
         

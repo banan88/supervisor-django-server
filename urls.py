@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^create_task/$', 'main_app.views.createTask'),
     url(r'^cancel_task/$', 'main_app.views.cancelTask'),
+    url(r'^get_user_tasks/(?P<field_user_id>\d+)/$', 'main_app.views.getUserTasks'),
 )
