@@ -39,9 +39,8 @@ var ajax = {
 		
 		cancelTask: function(task_id) { 
 			$.ajax({ type: "POST",   
-		         url: "/cancel_task/",
+		         url: "/cancel_task/" + task_id + "/",
 		         async: true,
-		         data: task_id,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
 		         success : function(text)
 		         {
