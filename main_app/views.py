@@ -70,18 +70,13 @@ def createTask(request):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
     
-def cancelTask(request):
+def cancelTask(request, task_id):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
-    if request.is_ajax() and request.method == "POST":
-        json = request.POST
+    if request.is_ajax() and request.method == "GET":
         try:
-            id = json.__getitem__("id")
-            try:
-                task = Task.objects.get(pk = id)
-            except Task.DoesNotExist:
-                raise KeyError
-        except KeyError:
+            task = Task.objects.get(pk = task_id)
+        except Task.DoesNotExist:
             return HttpResponse(status = 400)
         if task.supervisor != request.user:
             return HttpResponse(status = 401)
