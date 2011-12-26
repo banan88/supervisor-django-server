@@ -43,6 +43,10 @@ class Task(models.Model):                                                       
     last_synced = models.DateTimeField(blank = True, null = True)
     #importance = models.IntegerField(default = 0)
     
+    def save(self, *args, **kwargs):
+         self.version += 1
+         super(Task, self).save(*args, **kwargs)
+    
     def __unicode__(self):
         return self.name + " " + str(self.latitude) + " " + str(self.longitude)
     

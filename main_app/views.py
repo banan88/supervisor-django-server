@@ -88,28 +88,42 @@ def cancelTask(request, task_id):
     
 #zadania dla danego uzytkownika terenowego (bez wzgledu na stan i to czy ten supervisor cos mu przydzielil)
     
-def getUserTasks(request, field_user_id):
+def getUserTasks(request, field_user_id, opt_state = None):
+    print opt_state
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
     if request.is_ajax() and request.method == "GET":
         try:
-            print 1
             user = User.objects.get(pk = field_user_id)
-            print 2
             try:
                 user.fielduserprofile #https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users
             except FieldUserProfile.DoesNotExist:
-                print 3
-                pass
-                #return HttpResponse(status = 400)
+                print user
+                return HttpResponse(status = 400)
         except User.DoesNotExist:
             return HttpResponse(status = 400)
-        print "ok"
         tasks = Task.objects.filter(fieldUser = user)
-        tasks = dict([(task.pk, {"name" : task.name}) for task in tasks]) #all task params
-        #json = simplejson.dump
-        print tasks
-        return HttpResponse(status = 200) 
+        
+        #if opt_state: to check!!
+           # tasks.filter(status = str(opt_state))
+        tasks = dict([(task.pk, {
+                                 "fu" : str(task.fieldUser),
+                                 "lat" : str(task.latitude),
+                                 "lon" : str(task.longitude),
+                                 "state" : str(task.state),
+                                 "name" : str(task.name),
+                                 "desc" : str(task.description),
+                                 "created" : str(task.creation_time),
+                                 "modified" : str(task.last_modified),
+                                 "finished" : str(task.finish_time),
+                                 "started" : str(task.start_time),
+                                 "ver" : str(task.version),
+                                 "last_sync" : str(task.last_synced),
+                                 }) for task in tasks]) #all task params
+        
+        json = simplejson.dumps(tasks)
+        return HttpResponse(json, mimetype = "application/json") 
             
+
             
         

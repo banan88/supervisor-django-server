@@ -23,40 +23,51 @@ var util = {
 };
 
 var ajax = {
-		
-		createTask : function(task_data) { 
+		/*
+		 * onSuccess - funkcja przyjmujaca dane odebrane poprzez ajax
+		 */
+		createTask : function(task_data, onSuccess) { 
 			$.ajax({ type: "POST",   
 		         url: "/create_task/",
 		         async: true,
 		         data: task_data,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
-		         success : function(text)
+		         success : function(return_data)
 		         {
-		        	alert(text);
+		        	 onSuccess(return_data);
 		         }
 			});
 		},
 		
-		cancelTask: function(task_id) { 
+		cancelTask: function(task_id, onSuccess) { 
 			$.ajax({ type: "POST",   
 		         url: "/cancel_task/" + task_id + "/",
 		         async: true,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
-		         success : function(text)
+		         success : function(return_data)
 		         {
-		        	alert(text);
+		        	 onSuccess(return_data);
 		         }
 			});
 		},
 		
-		getUserTasks: function(field_user_id) {
+		/*
+		 * without state returns all tasks for that user
+		 * state = models.Task.STATES
+		 */ 
+		
+		getUserTasks: function(field_user_id, onSuccess, opt_state) {
+			//if opt_state not supplied -> target url is without last param
+			opt_state = typeof(opt_state) 
+			!= 'undefined' ? opt_state : '';
+			
 			$.ajax({ type: "GET",   
-		         url: "/get_user_tasks/" + field_user_id + "/",
+		         url: "/get_user_tasks/" + field_user_id + '/' + opt_state,
 		         async: true,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
-		         success : function(text)
+		         success : function(return_data)
 		         {
-		        	alert(text);
+		        	 onSuccess(return_data);
 		         }
 			});
 		},
@@ -64,12 +75,12 @@ var ajax = {
 
 $(document).ready(function(){
 	var a = { 
-		fuser : 1,
+		fuser : 2,
 		lat : 12.1414,
 		lon : 14.1414,
 		name : "raz",
 		desc : "opis",
 	};
 	var b = { id : 4};
-	ajax.getUserTasks(1);
+	ajax.getUserTasks(2, function(data){alert(data['8'].created);}, 1);
 });
