@@ -32,11 +32,20 @@ def index(request):
     return render_to_response("index.html", {}, context_instance = RequestContext(request))
     
 
-def check_updates(request):
-    json = simplejson.dumps({"a":123})
-    return HttpResponse(json, mimetype = "application/json")
-
-#tworzenie zadania, edycja zadania (zmiana stanu/parametrow)
+def checkUpdates(request, row_limit):
+    if not request.user.is_authenticated():
+        return HttpResponse(status = 401)
+    if request.method == "GET":
+        try:
+            user = request.user
+            user.fielduserprofile
+        except FieldUserProfile.DoesNotExist:
+            return HttpResponse(status = 400)
+        tasks = Task.objects.filter(fieldUser = user).order_by('last_modified')[:int(row_limit)]
+        tasks = dict([(task.pk, task.version) for task in tasks ])
+        json = simplejson.dumps(tasks)
+        return HttpResponse(json, mimetype = "application/json")
+    return HttpResponse(status = 400)
 
 
 def createTask(request):
@@ -70,42 +79,41 @@ def createTask(request):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
     
-def cancelTask(request, task_id):
+    
+def editTaskState(request, task_id, state):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
     if request.is_ajax() and request.method == "GET":
+        if state not in ('0','1','2','3'):
+            return HttpResponse(status = 400)
         try:
             task = Task.objects.get(pk = task_id)
         except Task.DoesNotExist:
             return HttpResponse(status = 400)
         if task.supervisor != request.user:
             return HttpResponse(status = 401)
-        task.state = "0"
+        task.state = state
         task.save()
-        print task.state
         return HttpResponse(status = 200)
     return HttpResponse(status = 400) 
     
-#zadania dla danego uzytkownika terenowego (bez wzgledu na stan i to czy ten supervisor cos mu przydzielil)
+#zadania dla danego uzytkownika terenowego (wszystkie lub okreslonego stanu)
     
 def getUserTasks(request, field_user_id, opt_state = None):
-    print opt_state
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
     if request.is_ajax() and request.method == "GET":
         try:
             user = User.objects.get(pk = field_user_id)
-            try:
-                user.fielduserprofile #https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users
-            except FieldUserProfile.DoesNotExist:
-                print user
-                return HttpResponse(status = 400)
-        except User.DoesNotExist:
+            user.fielduserprofile
+        except (FieldUserProfile.DoesNotExist, User.DoesNotExist):
             return HttpResponse(status = 400)
+
         tasks = Task.objects.filter(fieldUser = user)
-        
-        #if opt_state: to check!!
-           # tasks.filter(status = str(opt_state))
+        if opt_state:
+            if opt_state not in ('0','1','2','3'):
+                return HttpResponse(status = 400)
+            tasks = tasks.filter(state = opt_state)
         tasks = dict([(task.pk, {
                                  "fu" : str(task.fieldUser),
                                  "lat" : str(task.latitude),
@@ -122,8 +130,9 @@ def getUserTasks(request, field_user_id, opt_state = None):
                                  }) for task in tasks]) #all task params
         
         json = simplejson.dumps(tasks)
+        print json
         return HttpResponse(json, mimetype = "application/json") 
-            
+    return HttpResponse(status = 400)
 
             
         

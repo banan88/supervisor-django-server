@@ -25,6 +25,17 @@ var util = {
 var ajax = {
 		/*
 		 * onSuccess - funkcja przyjmujaca dane odebrane poprzez ajax
+		 * 
+		 * task_data is a json object, for example:
+		 * 
+		 * { 
+			fuser : 2,
+			lat : 12.1414,
+			lon : 14.1414,
+			name : "raz",
+			desc : "opis",
+		   };
+		 * 
 		 */
 		createTask : function(task_data, onSuccess) { 
 			$.ajax({ type: "POST",   
@@ -39,9 +50,9 @@ var ajax = {
 			});
 		},
 		
-		cancelTask: function(task_id, onSuccess) { 
-			$.ajax({ type: "POST",   
-		         url: "/cancel_task/" + task_id + "/",
+		editTaskState: function(task_id, onSuccess, state) { 
+			$.ajax({ type: "GET",   
+		         url: "/edit_task_state/" + task_id + '/' + state + '/',
 		         async: true,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
 		         success : function(return_data)
@@ -62,7 +73,7 @@ var ajax = {
 			!= 'undefined' ? opt_state : '';
 			
 			$.ajax({ type: "GET",   
-		         url: "/get_user_tasks/" + field_user_id + '/' + opt_state,
+		         url: "/get_user_tasks/" + field_user_id + '/' + opt_state + '/',
 		         async: true,
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
 		         success : function(return_data)
@@ -71,6 +82,8 @@ var ajax = {
 		         }
 			});
 		},
+		
+
 }
 
 $(document).ready(function(){
@@ -82,5 +95,7 @@ $(document).ready(function(){
 		desc : "opis",
 	};
 	var b = { id : 4};
-	ajax.getUserTasks(2, function(data){alert(data['8'].created);}, 1);
+	//ajax.getUserTasks(2, function(data){alert(data['8'].created);});
+	//ajax.editTaskState(7, function(data){alert(data);}, 2)
+	ajax.che
 });
