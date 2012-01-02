@@ -31,7 +31,7 @@ def validateLon(value):
 def index(request):
     return render_to_response("index.html", {}, context_instance = RequestContext(request))
     
-
+#fielduser
 def checkUpdates(request, row_limit):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -47,7 +47,15 @@ def checkUpdates(request, row_limit):
         return HttpResponse(json, mimetype = "application/json")
     return HttpResponse(status = 400)
 
+#fielduser
+def getChangedTasks(request): #should take json object with primary keys
+    if not request.user.is_authenticated():
+        return HttpResponse(status = 401)
+    if request.method == "GET":
+        pass #should return requested task objects 
+    return HttpResponse(status = 400)
 
+#supervisor
 def createTask(request):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -79,7 +87,7 @@ def createTask(request):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
     
-    
+#supervisor
 def editTaskState(request, task_id, state):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -95,14 +103,17 @@ def editTaskState(request, task_id, state):
         task.state = state
         task.save()
         return HttpResponse(status = 200)
-    return HttpResponse(status = 400) 
+    return HttpResponse(status = 400)
+
+ 
     
 #zadania dla danego uzytkownika terenowego (wszystkie lub okreslonego stanu)
-    
+
+#supervisor or user    
 def getUserTasks(request, field_user_id, opt_state = None):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
-    if request.is_ajax() and request.method == "GET":
+    if request.method == "GET":
         try:
             user = User.objects.get(pk = field_user_id)
             user.fielduserprofile
