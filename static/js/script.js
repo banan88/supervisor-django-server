@@ -97,5 +97,5 @@ $(document).ready(function(){
 	var b = { id : 4};
 	//ajax.getUserTasks(2, function(data){alert(data['8'].created);});
 	//ajax.editTaskState(7, function(data){alert(data);}, 2)
-	ajax.che
+	
 });
