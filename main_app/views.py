@@ -29,7 +29,8 @@ def validateLon(value):
     return value
 
 def index(request):
-    return render_to_response("index.html", {}, context_instance = RequestContext(request))
+    #return render_to_response("index.html", {}, context_instance = RequestContext(request))
+    return HttpResponse("POLACZENIE!")
     
 
 def checkUpdates(request, row_limit):
