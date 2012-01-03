@@ -104,11 +104,13 @@ TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS +(
   'django.core.context_processors.request',
 )
 
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'supervisor-django-server.main_app.api.CustomHeaderMiddleware', #mobile client header - request.META[autorization] visibility
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 

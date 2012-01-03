@@ -5,14 +5,11 @@ from django.template.context import RequestContext
 from django.template import Context, Template
 
 from django.contrib.auth.decorators import login_required
-    
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.utils import simplejson
 from main_app.models import *
-import simplejson
-
 
 def validateLat(value):
     value = float(value)
@@ -28,35 +25,31 @@ def validateLon(value):
         raise KeyError
     return value
 
-def index(request):
-    #return render_to_response("index.html", {}, context_instance = RequestContext(request))
-    return HttpResponse("POLACZENIE!")
-    
-#fielduser
-def checkUpdates(request, row_limit):
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
-    if request.method == "GET":
-        try:
-            user = request.user
-            user.fielduserprofile
-        except FieldUserProfile.DoesNotExist:
+
+def getTasksInJson(user, opt_state):
+    tasks = Task.objects.filter(fieldUser = user)
+    if opt_state:
+        if opt_state not in ('0','1','2','3'):
             return HttpResponse(status = 400)
-        tasks = Task.objects.filter(fieldUser = user).order_by('last_modified')[:int(row_limit)]
-        tasks = dict([(task.pk, task.version) for task in tasks ])
-        json = simplejson.dumps(tasks)
-        return HttpResponse(json, mimetype = "application/json")
-    return HttpResponse(status = 400)
+        tasks = tasks.filter(state = opt_state)
+    tasks = dict([(task.pk, {
+                             "fu" : str(task.fieldUser),
+                             "lat" : str(task.latitude),
+                             "lon" : str(task.longitude),
+                             "state" : str(task.state),
+                             "name" : str(task.name),
+                             "desc" : str(task.description),
+                             "created" : str(task.creation_time),
+                             "modified" : str(task.last_modified),
+                             "finished" : str(task.finish_time),
+                             "started" : str(task.start_time),
+                             "ver" : str(task.version),
+                             "last_sync" : str(task.last_synced),
+                             }) for task in tasks]) #all task params
+    json = simplejson.dumps(tasks)
+    return HttpResponse(json, mimetype = "application/json") 
 
-#fielduser
-def getChangedTasks(request): #should take json object with primary keys
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
-    if request.method == "GET":
-        pass #should return requested task objects 
-    return HttpResponse(status = 400)
 
-#supervisor
 def createTask(request):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -88,7 +81,7 @@ def createTask(request):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
     
-#supervisor
+
 def editTaskState(request, task_id, state):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -109,8 +102,6 @@ def editTaskState(request, task_id, state):
  
     
 #zadania dla danego uzytkownika terenowego (wszystkie lub okreslonego stanu)
-
-#supervisor or user    
 def getUserTasks(request, field_user_id, opt_state = None):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
@@ -120,30 +111,7 @@ def getUserTasks(request, field_user_id, opt_state = None):
             user.fielduserprofile
         except (FieldUserProfile.DoesNotExist, User.DoesNotExist):
             return HttpResponse(status = 400)
-
-        tasks = Task.objects.filter(fieldUser = user)
-        if opt_state:
-            if opt_state not in ('0','1','2','3'):
-                return HttpResponse(status = 400)
-            tasks = tasks.filter(state = opt_state)
-        tasks = dict([(task.pk, {
-                                 "fu" : str(task.fieldUser),
-                                 "lat" : str(task.latitude),
-                                 "lon" : str(task.longitude),
-                                 "state" : str(task.state),
-                                 "name" : str(task.name),
-                                 "desc" : str(task.description),
-                                 "created" : str(task.creation_time),
-                                 "modified" : str(task.last_modified),
-                                 "finished" : str(task.finish_time),
-                                 "started" : str(task.start_time),
-                                 "ver" : str(task.version),
-                                 "last_sync" : str(task.last_synced),
-                                 }) for task in tasks]) #all task params
-        
-        json = simplejson.dumps(tasks)
-        print json
-        return HttpResponse(json, mimetype = "application/json") 
+        return getTasksInJson(user = user, opt_state = opt_state)
     return HttpResponse(status = 400)
 
             
