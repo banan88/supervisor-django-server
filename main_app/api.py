@@ -6,6 +6,7 @@ from main_app.models import *
 from main_app.views import getTasksInJson
 import simplejson
 import base64
+import datetime
 
 
 class CustomHeaderMiddleware(RemoteUserMiddleware):
@@ -26,13 +27,13 @@ def basicAuth(request):
     return user
     
         
-def checkUpdates(request, row_limit):
+def checkUpdates(request, row_limit = 100):
     if request.method == "GET":
         user = basicAuth(request)
         if not user:
             return HttpResponse(status = 401)
         tasks = Task.objects.filter(fieldUser = user).order_by('last_modified')[:int(row_limit)]
-        tasks = dict([(task.pk, task.version) for task in tasks ])
+        tasks = [{ "pk" : task.pk, "version" : task.version } for task in tasks ]
         json = simplejson.dumps(tasks)
         return HttpResponse(json, mimetype = "application/json")
     return HttpResponse(status = 400)
@@ -63,21 +64,65 @@ def getTasks(request, opt_state = None):
         return getTasksInJson(user, opt_state)
     return HttpResponse(status = 400)
 
-
-def taskStarted(request, task_id):
+def getTasksSince(request, datestring):
     if request.method == "GET":
         user = basicAuth(request)
         if not user:
             return HttpResponse(status = 401)
+        tasks = Task.objects.filter(fieldUser = user)
+        datelist = datestring.split('X')
+        if len(datelist) != 6:
+            return HttpResponse(status = 400)
+        date = datetime.date(int(datelist[0]), int(datelist[1]), int(datelist[2]))
+        time = datetime.time(int(datelist[3]), int(datelist[4]), int(datelist[5]))
+        dt = datetime.datetime.combine(date, time)
+        tasks = tasks.filter(last_modified__gte=dt)
+        for task in tasks:
+            print "dt:" + str(dt)
+            print "task" + str(task.last_modified)
+        tasks = [{"pk" : task.pk,
+                                 "fu" : str(task.fieldUser),
+                                 "lat" : str(task.latitude),
+                                 "lon" : str(task.longitude),
+                                 "state" : str(task.state),
+                                 "name" : str(task.name),
+                                 "desc" : str(task.description),
+                                 "created" : str(task.creation_time),
+                                 "modified" : str(task.last_modified),
+                                 "finished" : str(task.finish_time),
+                                 "started" : str(task.start_time),
+                                 "ver" : str(task.version),
+                                 "last_sync" : str(task.last_synced),
+                                 } for task in tasks] #all task params
+        json = simplejson.dumps(tasks)
+        return HttpResponse(json, mimetype = "application/json") 
+    return HttpResponse(status = 400)
+
+
+def changeTaskState(request, task_id, task_state):
+    if request.method == "GET":
+        if not task_state in ('1', '2', '3'):
+            return HttpResponse(status = 401)
+        user = basicAuth(request)
+        if not user:
+            return HttpResponse(status = 401)
         try:
-            task = Tasks.objects.get(pk = task_id)
+            task = Task.objects.get(pk = task_id)
         except Task.DoesNotExist:
             return HttpResponse(status = 404)
         if task.fieldUser != user:
             return HttpResponse(status = 401)
-        task.state = 2
+        
+        task.state = task_state
         task.save()
-    return HttpResponse(status = 200)
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400)
 
-def taskFinished(request, task_id):
-    pass
+def getLastSyncTime(request):
+    if request.method == "GET":
+        user = basicAuth(request)
+        if not user:
+            return HttpResponse(status = 401)
+        json = simplejson.dumps(str(user.fielduserprofile.sync_time))
+        return HttpResponse(json, mimetype = "application/json")
+    return HttpResponse(status = 400)

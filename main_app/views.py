@@ -32,7 +32,7 @@ def getTasksInJson(user, opt_state):
         if opt_state not in ('0','1','2','3'):
             return HttpResponse(status = 400)
         tasks = tasks.filter(state = opt_state)
-    tasks = dict([(task.pk, {
+    tasks = [{"pk" : task.pk,
                              "fu" : str(task.fieldUser),
                              "lat" : str(task.latitude),
                              "lon" : str(task.longitude),
@@ -45,7 +45,7 @@ def getTasksInJson(user, opt_state):
                              "started" : str(task.start_time),
                              "ver" : str(task.version),
                              "last_sync" : str(task.last_synced),
-                             }) for task in tasks]) #all task params
+                             } for task in tasks] #all task params
     json = simplejson.dumps(tasks)
     return HttpResponse(json, mimetype = "application/json") 
 

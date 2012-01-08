@@ -18,7 +18,7 @@ class FieldUserProfile(models.Model):
     phone_numer = models.CharField(max_length = 20, blank = True, null = True)
     home_adress = models.CharField(max_length = 50, blank = True, null = True)
     office = models.ForeignKey(Office)
-
+    sync_time = models.DateTimeField(blank = True, null = True)
 #zadanie
 
 class Task(models.Model):                                                       #klienci korzystaja w swoich bazach z id obiektow tej klasy
