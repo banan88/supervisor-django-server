@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.utils import simplejson
 from main_app.models import *
 from main_app.views import getTasksInJson
+from datetime import datetime
 import simplejson
 import base64
 import datetime
@@ -71,10 +72,10 @@ def getTasksSince(request, datestring):
             return HttpResponse(status = 401)
         tasks = Task.objects.filter(fieldUser = user)
         datelist = datestring.split('X')
-        if len(datelist) != 6:
+        if len(datelist) != 7:
             return HttpResponse(status = 400)
         date = datetime.date(int(datelist[0]), int(datelist[1]), int(datelist[2]))
-        time = datetime.time(int(datelist[3]), int(datelist[4]), int(datelist[5]))
+        time = datetime.time(int(datelist[3]), int(datelist[4]), int(datelist[5]), int(datelist[6]))
         dt = datetime.datetime.combine(date, time)
         tasks = tasks.filter(last_modified__gte=dt)
         for task in tasks:
@@ -95,6 +96,8 @@ def getTasksSince(request, datestring):
                                  "last_sync" : str(task.last_synced),
                                  } for task in tasks] #all task params
         json = simplejson.dumps(tasks)
+        user.fielduserprofile.sync_time = datetime.datetime.now()
+        user.fielduserprofile.save()
         return HttpResponse(json, mimetype = "application/json") 
     return HttpResponse(status = 400)
 
