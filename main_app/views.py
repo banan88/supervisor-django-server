@@ -33,6 +33,7 @@ def getTasksInJson(user, opt_state):
             return HttpResponse(status = 400)
         tasks = tasks.filter(state = opt_state)
     tasks = [{"pk" : task.pk,
+                             "supervisor" : str(task.supervisor),
                              "fu" : str(task.fieldUser),
                              "lat" : str(task.latitude),
                              "lon" : str(task.longitude),

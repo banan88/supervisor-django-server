@@ -20,10 +20,8 @@ urlpatterns = patterns('',
     
     #remote api urls
     
-    url(r'^check_updates/(?P<row_limit>\d+)/$', 'main_app.api.checkUpdates'),
-    url(r'^get_tasks/$', 'main_app.api.getTasks'),
-    url(r'^get_tasks/(?P<opt_state>.*)/$', 'main_app.api.getTasks'),
+    url(r'^get_n_tasks/(?P<count>\d+)/$', 'main_app.api.getNTasks'),
     url(r'^change_task_state/(?P<task_id>\d+)/(?P<task_state>\d)/$', 'main_app.api.changeTaskState'),
-    url(r'^get_tasks_since/(?P<datestring>.*)/$', 'main_app.api.getTasksSince'),
+    url(r'^get_tasks_since_last_sync/$', 'main_app.api.getTasksSinceLastSync'),
     url(r'^get_last_sync_time/$', 'main_app.api.getLastSyncTime'),
 )
