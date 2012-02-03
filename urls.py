@@ -23,5 +23,4 @@ urlpatterns = patterns('',
     url(r'^get_n_tasks/(?P<count>\d+)/$', 'main_app.api.getNTasks'),
     url(r'^change_task_state/(?P<task_id>\d+)/(?P<task_state>\d)/$', 'main_app.api.changeTaskState'),
     url(r'^get_tasks_since_last_sync/$', 'main_app.api.getTasksSinceLastSync'),
-    url(r'^get_last_sync_time/$', 'main_app.api.getLastSyncTime'),
 )
