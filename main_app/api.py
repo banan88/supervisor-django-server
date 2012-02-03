@@ -35,7 +35,7 @@ def getNTasks(request, count):
         if not user:
             return HttpResponse(status = 401)
         tasks = Task.objects.filter(fieldUser = user)
-        tasks = tasks.order_by('last_modified')
+        tasks = tasks.order_by('last_modified')[:count]
         tasks = [{"pk" : task.pk,
                                  "supervisor" : str(task.supervisor),
                                  "lat" : str(task.latitude),
@@ -104,18 +104,7 @@ def changeTaskState(request, task_id, task_state):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
 
-def getLastSyncTime(request):
-    if request.method == "GET":
-        user = basicAuth(request)
-        if not user:
-            return HttpResponse(status = 401)
-        json = simplejson.dumps(str(user.fielduserprofile.sync_time))
-        print json
-        return HttpResponse(json, mimetype = "application/json")
-    return HttpResponse(status = 400)
 
-def setStartTime(request, time):
+def postChangedDays(request): # json: [days {day} {} {} ]
     pass
 
-def setFinishTime(request, time):
-    pass

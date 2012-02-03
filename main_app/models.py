@@ -51,6 +51,9 @@ class Task(models.Model):                                                       
         return self.name + " " + str(self.latitude) + " " + str(self.longitude)
     
  
-
-
+class WorkDay(models.Model):
+    fieldUser = models.ForeignKey(User)
+    day = models.DateTimeField()
+    start = models.DateTimeField()
+    finish = models.DateTimeField()
     
