@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', 'main_app.views.index'),
     
     (r'^login/$',  login, {'template_name': 'login.html'}),
     url(r'^create_task/$', 'main_app.views.createTask'),
@@ -19,8 +20,7 @@ urlpatterns = patterns('',
     url(r'^get_user_tasks/(?P<field_user_id>\d+)/(?P<opt_state>.*)/$', 'main_app.views.getUserTasks', name = "with_status"),
     
     #remote api urls
-    
     url(r'^get_n_tasks/(?P<count>\d+)/$', 'main_app.api.getNTasks'),
-    url(r'^change_task_state/(?P<task_id>\d+)/(?P<task_state>\d)/$', 'main_app.api.changeTaskState'),
+    url(r'^change_tasks_states/$', 'main_app.api.changeTasksStates'),
     url(r'^get_tasks_since_last_sync/$', 'main_app.api.getTasksSinceLastSync'),
 )
