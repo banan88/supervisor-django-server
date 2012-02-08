@@ -26,6 +26,10 @@ def validateLon(value):
     return value
 
 
+def index(request):
+    return HttpResponse("<h1>Index loaded...</h1>")
+
+
 def getTasksInJson(user, opt_state):
     tasks = Task.objects.filter(fieldUser = user)
     if opt_state:
