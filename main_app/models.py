@@ -53,7 +53,7 @@ class Task(models.Model):                                                       
  
 class WorkDay(models.Model):
     fieldUser = models.ForeignKey(User)
-    day = models.DateTimeField()
+    day = models.DateField()
     start = models.DateTimeField()
     finish = models.DateTimeField()
     

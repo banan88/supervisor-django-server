@@ -5,3 +5,4 @@ from main_app.models import *
 admin.site.register(Task)
 admin.site.register(FieldUserProfile)
 admin.site.register(Office)
+admin.site.register(WorkDay)

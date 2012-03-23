@@ -119,5 +119,3 @@ def getUserTasks(request, field_user_id, opt_state = None):
         return getTasksInJson(user = user, opt_state = opt_state)
     return HttpResponse(status = 400)
 
-            
-        

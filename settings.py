@@ -5,12 +5,30 @@ import getpass
 user = getpass.getuser()
 DIRNAME = os.path.dirname(__file__)
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    # ('test/test', 'your_email@example.com'),
+import socket
+PRODUCTION = (socket.getfqdn(socket.gethostname()) == 'http7.alwaysdata.com') #check for production env
+
+if PRODUCTION:
+    ADMINS = (
+    ('mateusz banaszkiewicz', 'mat.banaszkiewicz@gmail.com'),
+    )
+else:
+    ADMINS = (
+    ('test/test', 'your_email@example.com'),
 )
+
+if PRODUCTION:
+    ADMIN_MEDIA_PREFIX = '/media/'
+else:
+    ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+DEBUG = not PRODUCTION
+
+if PRODUCTION:
+    TEMPLATE_DEBUG = DEBUG
+else:
+    TEMPLATE_DEBUG = False
 
 MANAGERS = ADMINS
 
@@ -70,7 +88,10 @@ STATIC_URL = ('/static/')
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
 # Examples: "http://foo.com/static/admin/", "/static/admin/".
-ADMIN_MEDIA_PREFIX = '/static/admin/'
+if PRODUCTION:
+    ADMIN_MEDIA_PREFIX = '/media/'
+else:
+    ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 

@@ -22,5 +22,6 @@ urlpatterns = patterns('',
     #remote api urls
     url(r'^get_n_tasks/(?P<count>\d+)/$', 'main_app.api.getNTasks'),
     url(r'^change_tasks_states/$', 'main_app.api.changeTasksStates'),
+    url(r'^change_work_times/$', 'main_app.api.changeWorkTimes'),
     url(r'^get_tasks_since_last_sync/$', 'main_app.api.getTasksSinceLastSync'),
 )
