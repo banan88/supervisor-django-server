@@ -126,8 +126,8 @@ def changeTasksStates(request):
                 continue
             if task.fieldUser != user:
                 continue
-            c_state = str(entry[1])
-            if not str(c_state) in ('2', '3'):
+            c_state = int(entry[1])
+            if not (TaskState.objects.get(pk = c_state)).can_be_toggled:
                 continue
             c_start_time = entry[2]
             if c_start_time != 0:
@@ -137,7 +137,7 @@ def changeTasksStates(request):
             if c_finish_time != 0:
                 task.finish_time = datetime.datetime.fromtimestamp(c_finish_time//1000) #POSIX timestamp s since 1970
                 print 3
-            task.state = c_state
+            task.state = TaskState.objects.get(pk = c_state)
             task.save()
         user.fielduserprofile.sync_time = datetime.datetime.now()
         user.fielduserprofile.save()
