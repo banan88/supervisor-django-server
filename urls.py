@@ -24,4 +24,8 @@ urlpatterns = patterns('',
     url(r'^change_tasks_states/$', 'main_app.api.changeTasksStates'),
     url(r'^change_work_times/$', 'main_app.api.changeWorkTimes'),
     url(r'^get_tasks_since_last_sync/$', 'main_app.api.getTasksSinceLastSync'),
+    url(r'^new_tasks_history/$', 'main_app.api.newTasksHistory'),
+    url(r'^new_user_locations/$', 'main_app.api.newUserLocations'),
+    #url(r'^get_task_state_table_version/$', 'main_app.api.getTaskStateTableVersion'),
+    #url(r'^get_task_state_table_updates/$', 'main_app.api.getTaskStateTableUpdates')
 )

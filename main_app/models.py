@@ -1,13 +1,8 @@
+# -*- coding: utf8
+
 from django.db import models
 from django.contrib.auth.models import User
 import datetime
-
-#biuro, nie wiem czy bedzie uzywane, ew przy rozbudowie
-
-class Office(models.Model):
-    name = models.CharField(max_length = 50, blank = False, null = True)
-    adress = models.CharField(max_length = 50, blank = True, null = True)
-    phone_number = models.CharField(max_length = 20, blank = True, null = True)   
 
 #profil pracownika terenowego powiazany z obiektem usera (nadzorca ma jest po prostu userem, bez profilu)
 
@@ -18,26 +13,21 @@ class FieldUserProfile(models.Model):
     imei_number = models.CharField(max_length = 30, blank = True, null = True)
     phone_numer = models.CharField(max_length = 20, blank = True, null = True)
     home_adress = models.CharField(max_length = 50, blank = True, null = True)
-    office = models.ForeignKey(Office)
     sync_time = models.DateTimeField(blank = True, null = True)
 
-
-class TaskState(models.Model):
-    state_description = models.CharField(max_length = 30)
-    is_displayed = models.BooleanField(default = True) #czy jest widoczne dla uzytkownika androida
-    tasks_are_archived = models.BooleanField(default = False) #czy zadania o tym stanie sa wyswietlane w archiwum
-    can_be_toggled = models.BooleanField(default = False) #czy user androidowy moze zmienic stan zadania na taki
-    #z jakich stanow zadania uzytkownik androida moze przejsc do tego stanu zadania (nieobowiazkowe)
-    toggled_from = models.ManyToManyField('self', symmetrical=False, blank = True)
-    def __unicode__(self):
-        return self.state_description
+STATES = (
+        ('3', 'done'),
+        ('2', 'current'),
+        ('1', 'pending'),
+        ('0', 'cancelled'),
+        )
 
 
 class Task(models.Model):
     fieldUser = models.ForeignKey(User, related_name = 'fielduser_set') 
     latitude = models.FloatField()
     longitude = models.FloatField()
-    state = models.ForeignKey(TaskState)
+    state = models.CharField(choices = STATES, max_length = 1)
     name = models.CharField(max_length = 30)
     description = models.TextField()
     creation_time = models.DateTimeField(auto_now_add = True)
@@ -65,7 +55,8 @@ class Task(models.Model):
         if self.version == 1:
             savedTaskInstance = Task.objects.get(pk = self.pk)
             self.updateTaskHistory(savedTaskInstance, self.state, True,
-                self.supervisor, datetime.datetime.now(), "zadanie zostalo utworzone")
+                self.supervisor, datetime.datetime.now(),
+                u"zadanie zostalo utworzone przez użytkownika \"" + self.supervisor.username + "\"")
     
     def __unicode__(self):
         return self.name + " " + str(self.latitude) + " " + str(self.longitude)
@@ -74,11 +65,13 @@ class Task(models.Model):
 
 class TaskStateHistory(models.Model):
     task = models.ForeignKey(Task)
-    state_changed_to = models.ForeignKey(TaskState, null = True)
+    state_changed_to =  models.CharField(choices = STATES, max_length = 1)
     content_edited = models.BooleanField(default = False) #czy poza stanem cos sie zmienilo
     user_editor = models.ForeignKey(User) #kto wykonal zmiane
-    change_time = models.DateTimeField(auto_now = True);
+    change_time = models.DateTimeField();
     change_description = models.CharField(max_length = 50)
+    change_latitude = models.FloatField(null = True)
+    change_longitude = models.FloatField(null = True)
 
  
 class WorkDay(models.Model):
@@ -86,3 +79,9 @@ class WorkDay(models.Model):
     day = models.DateField()
     start = models.DateTimeField()
     finish = models.DateTimeField()
+
+class UserLocation(models.Model):
+    user = models.ForeignKey(User)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    timestamp = models.DateTimeField()

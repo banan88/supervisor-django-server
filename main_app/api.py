@@ -50,13 +50,10 @@ def getNTasks(request, count):
         user = basicAuth(request)
         if not user:
             return HttpResponse(status = 401)
-        print 1
         tasks = Task.objects.filter(fieldUser = user)
-        print 2
         tasks = tasks.order_by('last_modified')[:count]
         if len(tasks) == 0:
             return HttpResponse(status = 200)
-        print 3
         tasks = [{"pk" : task.pk,
                                  "supervisor" : smart_str(task.supervisor),
                                  "lat" : smart_str(task.latitude),
@@ -71,10 +68,7 @@ def getNTasks(request, count):
                                  "ver" : repr(task.version),
                                  "last_sync" : datetime_to_ms(datetime.datetime.now()),
                                  } for task in tasks]
-
-        print 4
         json = simplejson.dumps(tasks)
-        print 5
         user.fielduserprofile.sync_time = datetime.datetime.now()
         user.fielduserprofile.save()
         return HttpResponse(json, mimetype = "application/json") 
@@ -126,8 +120,8 @@ def changeTasksStates(request):
                 continue
             if task.fieldUser != user:
                 continue
-            c_state = int(entry[1])
-            if not (TaskState.objects.get(pk = c_state)).can_be_toggled:
+            c_state = str(entry[1])
+            if not str(c_state) in ('2', '3'):
                 continue
             c_start_time = entry[2]
             if c_start_time != 0:
@@ -137,7 +131,7 @@ def changeTasksStates(request):
             if c_finish_time != 0:
                 task.finish_time = datetime.datetime.fromtimestamp(c_finish_time//1000) #POSIX timestamp s since 1970
                 print 3
-            task.state = TaskState.objects.get(pk = c_state)
+            task.state = c_state
             task.save()
         user.fielduserprofile.sync_time = datetime.datetime.now()
         user.fielduserprofile.save()
@@ -169,3 +163,45 @@ def changeWorkTimes(request):
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
 
+@csrf_exempt
+def newTasksHistory(request):
+    if request.method == "POST":
+        user = basicAuth(request)
+        if not user:
+            return HttpResponse(status = 401)
+        data = request.raw_post_data
+        json = simplejson.loads(data)
+        for entry in json:
+            newEntry = TaskStateHistory(
+                task = Task.objects.get(pk = entry[0]),
+                state_changed_to = entry[1],
+                content_edited = False,
+                user_editor = user,
+                change_time = datetime.datetime.fromtimestamp(entry[2]//1000),
+                change_description = entry[3],
+                change_latitude = entry[4],
+                change_longitude = entry[5]
+           )
+            newEntry.save()
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400)
+
+
+@csrf_exempt
+def newUserLocations(request):
+    if request.method == "POST":
+        user = basicAuth(request)
+        if not user:
+            return HttpResponse(status = 401)
+        data = request.raw_post_data
+        json = simplejson.loads(data)
+        for entry in json:
+            newEntry = UserLocation(
+                user = user,
+                timestamp = datetime.datetime.fromtimestamp(entry[0]//1000),
+                latitude = entry[1],
+                longitude = entry[2]
+           )
+            newEntry.save()
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400)

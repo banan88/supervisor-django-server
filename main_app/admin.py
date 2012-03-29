@@ -4,7 +4,6 @@ from main_app.models import *
 
 admin.site.register(Task)
 admin.site.register(FieldUserProfile)
-admin.site.register(Office)
 admin.site.register(WorkDay)
-admin.site.register(TaskState)
 admin.site.register(TaskStateHistory)
+admin.site.register(UserLocation)
