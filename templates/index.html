@@ -1,13 +1,55 @@
-<p>user: {{task.user}}</p>
-<p>lat: {{task.latitude}}</p>
-<p>lon: {{task.longitude}}</p>
-<p>state: {{task.state}}</p>
-<p>name: {{task.name}}</p>
-<p>desc: {{task.description}}</p>
-<p>assign time: {{task.assign_time}}</p>
-<p>start time: {{task.start_time}}</p>
-<p>finish time: {{task.finish_time}}</p>
-<p>supervisor: {{task.supervisor}}</p>
+{% extends 'base.html' %}
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-<script src = "{{STATIC_URL}}js/script.js"></script>
+{% block title %} Supervisor: Strona główna {% endblock %}
+
+{%block content%}
+    <div class="container-fluid ">
+		<div class="center_vertical">
+			<div class="single_content_center content">
+				<div>
+				<a class="download_client" href="#"></a>
+                </div>
+                <div class="centered_description large_font">
+					 <br>
+                    <a href="#">Pobierz mobilnego klienta Supervisor na swojego smartfona</a>
+                    <br>
+                    <a class="btn btn-large">http://bardzodlugiadresurldoaplikacji.org</a>
+                </div>
+			</div>
+			<div class="separator" ></div>
+			<div class="single_content_center content">
+				<div>
+				<a class="login" href="."></a>
+                </div>
+                    {%if user.username %}      
+                        <div class="centered_description large_font">
+                            <br><br>
+                                <a href="/user_main/">Zalogowano jako: {{user.username}} </a>                          
+                            </div>                        
+                        </div>    
+                    {% else %}
+                         <div class="centered_description large_font">
+					         <br>
+                            <a href="/login/">Zaloguj się do systemu</a>
+                            <br><br>
+                            <a class="btn btn-success btn-large" href="/login/">Zaloguj</a>
+                        </div>
+                    {% endif %}                    
+                
+			</div>
+			<div class="separator" ></div>
+			<div class="single_content_center content">
+				<div>
+				<a class="system_info" href="#"></a>
+                </div>
+                <div class="centered_description large_font">
+					 <br>
+                    <a href="#">Przeczytaj opis działania systemu</a>
+                    <br><br>
+                    <a class="btn btn-primary btn-large">Przejdź do opisu</a>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+{%endblock%}

@@ -123,6 +123,7 @@ TEMPLATE_LOADERS = (
 
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS +(
   'django.core.context_processors.request',
+  'main_app.views.timeContext',
 )
 
 

@@ -12,8 +12,13 @@ urlpatterns = patterns('',
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'main_app.views.index'),
+    url(r'^user_main/$', 'main_app.views.userMain'),
+    url(r'^tasks/(?P<task_id>\d+)/$', 'main_app.views.taskDetails'),
+    url(r'^save_task/(?P<task_id>\d+)/$', 'main_app.views.saveTask'),
+
     
     (r'^login/$',  login, {'template_name': 'login.html'}),
+    (r'^logout/$', logout, {'next_page':'/'}),
     url(r'^create_task/$', 'main_app.views.createTask'),
     url(r'^edit_task_state/(?P<task_id>\d+)/(?P<state>\d)/$', 'main_app.views.editTaskState'),
     url(r'^get_user_tasks/(?P<field_user_id>\d+)/$', 'main_app.views.getUserTasks', name = "all"),

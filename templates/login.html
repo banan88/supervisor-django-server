@@ -1,18 +1,37 @@
 {% extends "base.html" %}
 
+{% block title %} Supervisor: Zaloguj {% endblock %}
+
 	{% block content %}
-  {% if form.errors %}
-    <p class="error">Sorry, that's not a valid username or password</p>
-  {% endif %}
+            
+         <div class="container-fluid">
+            <div class="separator" ></div>
+           <div class="content span6 offset3 centered_description">
+                        {% if form.errors %}
+            <br>
+			<ul class="errorlist">
+		    <li><div class="alert alert-error">Zła nazwa użytkownika lub hasło.<i class="icon-remove icon-white"></i></div></li>
+			</ul>
+		  {% endif %}
 
-  <form action='.' method='post'>
-  	{% csrf_token %}
-    <label for="username">User name:</label>
-    <input type="text" name="username" value="" id="username">
-    <label for="password">Password:</label>
-    <input type="password" name="password" value="" id="password">
-
-    <input type="submit" value="login" />
-    <input type="hidden" name="next" value="/" />
-  <form action='.' method='post'>
+             <form action="" method="post">
+		          {% csrf_token %}
+		            <br><label for="username">Nazwa użytkownika:</label><br>
+		            <input type="text" name="username" value="" id="username">
+		            <br><label for="password">Hasło:</label><br>
+		            <input type="password" name="password" value="" id="password"><br><br>
+		            <p><button type="submit" class="btn btn-success btn-large">Zaloguj</button></p><br>
+		            <input type="hidden" name="next"
+				        {% if request.GET.next %}
+				        value="{{next}}" 
+				        {% else %}
+				        value = "/user_main/"
+				        {% endif %}
+			        />
+	        </form>
+          </div>
+        </div>
   	{% endblock %}
+
+
+

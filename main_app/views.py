@@ -1,4 +1,6 @@
-from django.shortcuts import render_to_response
+# -*- coding: utf-8 -*-
+
+from django.shortcuts import *
 from django.template.loader import render_to_string
 from django.template import loader
 from django.template.context import RequestContext
@@ -10,24 +12,74 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.utils import simplejson
 from main_app.models import *
+from datetime import datetime
 
-def validateLat(value):
-    value = float(value)
-    if value > 180 or value < -180:
-        value = float(value)
-        raise KeyError
-    return value
-    
-    
-def validateLon(value):
-    value = float(value)
-    if value > 90 or value < -90:
-        raise KeyError
-    return value
+
+DESCRIPTIONS = {'0':'Anulowane', '1':'Oczekujące', '2':'Aktywne', '3':'Wykonane'}
+
+def timeContext(request):
+    return {'current_time': datetime.time(datetime.now())}
 
 
 def index(request):
-    return HttpResponse("<h1>Index loaded...</h1>")
+    return render_to_response('index.html', context_instance = RequestContext(request))
+
+def userMain(request):
+    if request.user.is_authenticated():
+        user = request.user
+        return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
+    else:
+        return redirect('/login/')
+
+def taskDetails(request, task_id):
+    try:
+        task = Task.objects.get(pk = task_id)
+    except Task.DoesNotExist:
+        raise Http404
+    curr_desc = DESCRIPTIONS[str(task.state)]
+    if request.user.is_authenticated():
+        return render_to_response('user_main.html', {'task_details':True, 'task':task, 'curr_desc':curr_desc}, context_instance = RequestContext(request))
+
+def saveTask(request, task_id):
+    if not request.user.is_authenticated():
+        return HttpResponse(status = 401)
+    if request.is_ajax() and request.method == "POST":
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse(status = 400)
+        json = request.POST
+        lat = float(json.__getitem__("task_lat"))
+        lon = float(json.__getitem__("task_lon"))
+        name = json.__getitem__("task_name")
+        desc = json.__getitem__("task_desc")
+        t_user = json.__getitem__("task_user")
+        state = json.__getitem__("task_state")
+        was_edited = False
+        tag = ""
+        if task.latitude != lat or \
+        task.longitude != lon or \
+        task.description != desc \
+        or name != task.name:
+            task.latitude = lat
+            task.longitude = lon
+            task.description = desc
+            task.name = name
+            was_edited = True
+            tag = "użytkownik %s zmienił zawartość zadania." % (request.user)
+        if state != task.state:
+            task.state = state
+            tag += "użytkownik \"%s\" zmienił stan zadania na \"%s\"." % (request.user, DESCRIPTIONS[str(state)])
+        task.save()
+        print "ok"
+        print tag
+        print was_edited
+        if was_edited or tag != "":
+            task.updateTaskHistory(task, state, was_edited, request.user, datetime.now(), tag)
+        return HttpResponse(status = 200)
+    return HttpResponse(status = 400)
+
+#def updateTaskHistory(self, task, new_state, was_content_edited, user, timestamp, tag):
 
 
 def getTasksInJson(user, opt_state):
@@ -74,8 +126,8 @@ def createTask(request):
             except User.DoesNotExist:
                 raise KeyError
 
-            task.latitude = validateLat(lat)
-            task.longitude = validateLon(lon)
+            task.latitude = lat
+            task.longitude = lon
             task.state = "1"
             task.name = name
             task.description = desc

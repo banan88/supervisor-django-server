@@ -1,0 +1,160 @@
+* {
+   outline: dotted 1px;
+}
+
+
+body {
+	background-color: #c8d7da;
+}
+
+.content {
+	background-color: #fcfcfa;
+	border-radius: 8px;
+	box-shadow: 0px 0px 10px black;
+}
+
+.single_content_center {
+	width:50%;
+	height: 130px;
+    margin: 0px auto;
+}
+
+.center_vertical {
+	margin-top: 100px;
+}
+
+.margin_top_50 {
+    margin-top: 50px;
+}
+
+.download_client {
+	display: block;
+	width: 108px;
+	height: 108px;
+	float: left;
+	background-image: url('/static/img/download_client_icon.png');
+	margin: 12px 8px;
+}
+
+.login {
+	display: block;
+	width: 96px;
+	height: 96px;
+	float: left;
+	background-image: url('/static/img/keylauncher.png');
+	margin: 20px 15px;
+}
+
+.system_info {
+	display: block;
+	width: 96px;
+	height: 96px;
+	float: left;
+	background-image: url('/static/img/opis.png');
+	margin: 20px 15px;
+}
+
+header {
+	width:100%;
+	background: #4c4c4c; /* Old browsers */
+background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 2%, #666666 15%, #474747 39%, #2c2c2c 74%, #2b2b2b 76%, #1c1c1c 91%, #111111 94%, #131313 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(2%,#595959), color-stop(15%,#666666), color-stop(39%,#474747), color-stop(74%,#2c2c2c), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(94%,#111111), color-stop(100%,#131313)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top, #4c4c4c 0%,#595959 2%,#666666 15%,#474747 39%,#2c2c2c 74%,#2b2b2b 76%,#1c1c1c 91%,#111111 94%,#131313 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top, #4c4c4c 0%,#595959 2%,#666666 15%,#474747 39%,#2c2c2c 74%,#2b2b2b 76%,#1c1c1c 91%,#111111 94%,#131313 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top, #4c4c4c 0%,#595959 2%,#666666 15%,#474747 39%,#2c2c2c 74%,#2b2b2b 76%,#1c1c1c 91%,#111111 94%,#131313 100%); /* IE10+ */
+background: linear-gradient(top, #4c4c4c 0%,#595959 2%,#666666 15%,#474747 39%,#2c2c2c 74%,#2b2b2b 76%,#1c1c1c 91%,#111111 94%,#131313 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 ); /* IE6-9 */
+	color: white;
+	height: 45px;
+	border-bottom:solid;
+	border-width:1px;
+	border-color: gray;
+}
+
+.header_separator{
+	height:2px;
+	background: #dadada;
+	box-shadow: 0px 0px 20px black;
+}
+
+.logo_left {
+	display: block;
+	width: 200px;
+	height: 43px;
+	float: left;
+	background-image: url('/static/img/supervisor_title.png');
+	margin-left: 10px;
+}
+
+.login_right {
+	margin-top: 8px;
+	margin-right: 80px;
+	float: right;
+}
+
+.time {
+    position: absolute;
+    top: 13px;
+    right: 7px;
+}
+
+.separator {
+	width: 100%;
+	height: 40px;
+}
+
+.footer_separator{
+height:1px;
+background:gray;
+box-shadow: 0px -4px 10px black;
+}
+
+footer {
+	background: rgb(242,245,246); /* Old browsers */
+background: -moz-linear-gradient(top,  rgba(242,245,246,1) 0%, rgba(227,234,237,1) 37%, rgba(200,215,220,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(242,245,246,1)), color-stop(37%,rgba(227,234,237,1)), color-stop(100%,rgba(200,215,220,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* IE10+ */
+background: linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 ); /* IE6-9 */
+
+	height: 80px;
+	position:absolute;
+	width:100%;
+	margin-bottom: 0px;
+	bottom: 0px;
+	display: block;
+}
+
+.footer_author {
+	text-align:center;
+	font-size:11px;
+	line-height: 170%;
+	color: gray;
+	padding: 5px;
+}
+
+.footer_links {
+	text-align:center;
+	font-size:11px;
+	line-height: 80%;
+	padding: 5px;
+}
+
+.centered_description {
+	text-align: center;
+}
+
+.large_font {
+    font-size: 140%;
+}
+
+
+.download_link {
+    width: 200px;
+    border:solid;
+	border-width:1px;
+	border-color: gray;
+		
+}

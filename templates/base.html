@@ -1,4 +1,66 @@
-{% block content %}
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<title>{% block title %} {% endblock %}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+<link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+<link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
+<link href="{{STATIC_URL}}css/reset.css" rel="stylesheet">
+</head>
+<body>
+<header>
+		<a class="logo_left" href="/"></a>
+		<div class="login_right">
+            {%if user.username %}
+                    <div class="btn-group ">
+                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                                Witaj, {{user.username}}
+                            <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <a href="/user_main/">Wyświetl profil</a>
+                                <a href="/logout/">Wyloguj</a>
+                            </ul>
+                        </div>
+            {%else%}
+                <a class="btn btn-success" href="/login/">Zaloguj</a>
+            {%endif%}
+        </div>
+        <div class="time"><span class="label">{{current_time}}</span></div>
+</header>
+<div class="header_separator"></div>
+    {%block content%}
+    
+    {%endblock%}
 
+<footer>
+<div class="footer_separator"></div>
+<br>
+	<p class="footer_links">wykorzystane technologie i biblioteki:</p>
+	<p class="footer_links">
+		<a href="#">jquery</a> |
+		<a href="#">twitter bootstrap</a> |
+		<a href="#">html5</a> |
+		<a href="#">css3</a>
+	</p>
+	<p class="footer_author">Mateusz Banaszkiewicz 2012</p>
+</footer>
+<script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+<script src="{{STATIC_URL}}js/script.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-scrollspy.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-collapse.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-typeahead.js"></script>
+</body>
+</html>
 
-{% endblock %}

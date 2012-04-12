@@ -1,0 +1,57 @@
+{% block user_main_content %}
+             <form id="task-form" class="form-horizontal">
+              <fieldset>
+                  <label class="control-label" for="inputname">Nazwa zadania</label>
+                  <div class="controls">
+                    <input type="text" class="input-xlarge" id="inputname" value="{{task.name}}" disabled="">
+                  </div><br>
+                    <div class="control-group">
+                  <label class="control-label" for="inputuser">Użytkownik</label> 
+                  <div class="controls">
+                    <input type="text" class="input-xlarge disabled" id="inputuser" value="{{task.fieldUser}}" disabled="">
+                  </div>
+                   <br> 
+                   <label class="control-label" for="inputsuper">Nadzorca</label> 
+                  <div class="controls">
+                    <input type="text" class="input-xlarge disabled" id="inputsuper" value="{{task.supervisor}}" disabled="">
+                  </div>
+                   <br> 
+                  <label class="control-label" for="selectstate">Stan zadania</label>
+                  <div class="controls">
+                    <select id="selectstate" disabled>
+                        <option value="{{task.state}}">{{curr_desc}}</option>
+                        <option value="3">Wykonane</option>
+                        <option value="2">Aktywne</option>
+                        <option value="1">Oczekujące</option>
+                        <option value="0">Anulowane</option>
+                      </select>
+                  </div>
+                <br> 
+                  <label class="control-label" for="inputdesc">Opis zadania</label>
+                  <div class="controls">
+                    <textarea class="input-xlarge disabled" id="inputdesc" rows="3" 
+                    style="margin-left: 0px; margin-right: 0px; width: 270px; margin-top: 0px; 
+                    margin-bottom: 0px; height: 58px; " disabled="">{{task.description}}</textarea>
+                  </div>
+                 <br> 
+                  <label class="control-label" for="inputlat">Szerokość geograficzna</label>
+                  <div class="controls">
+                    <input type="text" class="input-xlarge" id="inputlat" value="{task.lat}}" disabled="">
+                  </div>
+                <br> 
+                  <label class="control-label" for="inputlon">Długość geograficzna</label>
+                  <div class="controls">
+                    <input class="input-xlarge disabled" id="inputlon" type="text" value="task.lon" disabled="">
+                  </div>
+                </div>
+              </fieldset>
+            <div class="form-actions">
+                <a id="edit_task" class="btn" type="edit">
+                    Modyfikuj
+                </a>
+                <a id="save_task" class="btn btn-success" type="submit">
+                    Zatwierdź
+                </a>
+              </div>
+             </form>
+{% endblock %} 

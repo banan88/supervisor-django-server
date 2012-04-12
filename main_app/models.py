@@ -36,8 +36,6 @@ class Task(models.Model):
     start_time = models.DateTimeField(blank = True, null = True)
     supervisor = models.ForeignKey(User, related_name = 'user_set')                                        #nadzorca
     version = models.IntegerField(default = 0)                   #na podstawie tej wartosci przeprowadzana jest synchronizacja
-    last_synced = models.DateTimeField(blank = True, null = True)
-    #importance = models.IntegerField(default = 0)
 
     def updateTaskHistory(self, task_pk, new_state, was_content_edited, user, timestamp, tag):
         updatedHistory = TaskStateHistory(task = task_pk,
