@@ -34,14 +34,15 @@
                     margin-bottom: 0px; height: 58px; " disabled="">{{task.description}}</textarea>
                   </div>
                  <br> 
-                  <label class="control-label" for="inputlat">Szerokość geograficzna</label>
+                  <label class="control-label" for="inputlat">Szerokość<br>geograficzna</label>
                   <div class="controls">
-                    <input type="text" class="input-xlarge" id="inputlat" value="{task.lat}}" disabled="">
+                    <input type="text" class="input-xlarge" id="inputlat" value="{{lat}}" disabled="">
                   </div>
                 <br> 
-                  <label class="control-label" for="inputlon">Długość geograficzna</label>
+                  <label class="control-label" for="inputlon">Długość<br>geograficzna</label>
                   <div class="controls">
-                    <input class="input-xlarge disabled" id="inputlon" type="text" value="task.lon" disabled="">
+                    <input class="input-xlarge disabled" id="inputlon" type="text" value="{{lon}}" disabled="">
+                    <a class ="btn" id="refresh"><i class="icon-refresh"></i> Odśwież mapę</a>
                   </div>
                 </div>
               </fieldset>
@@ -52,6 +53,12 @@
                 <a id="save_task" class="btn btn-success" type="submit">
                     Zatwierdź
                 </a>
+                <a id="cancel_change" class="btn btn-warning" type="submit">
+                    Anuluj
+                </a>
               </div>
              </form>
+             <div class="well" id="map_wrap">
+                <div id="map"></div>
+            </div>
 {% endblock %} 

@@ -38,7 +38,9 @@ def taskDetails(request, task_id):
         return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
     curr_desc = DESCRIPTIONS[str(task.state)]
     if request.user.is_authenticated():
-        return render_to_response('user_main.html', {'task_details':True, 'task':task, 'curr_desc':curr_desc}, context_instance = RequestContext(request))
+        print task.latitude
+        return render_to_response('user_main.html', {'task_details':True, 'task':task, 'lat': str(task.latitude),
+                    'lon': str(task.longitude), 'curr_desc':curr_desc}, context_instance = RequestContext(request))
     
 def saveTask(request, task_id):
     if not request.user.is_authenticated():
@@ -49,14 +51,18 @@ def saveTask(request, task_id):
         except Task.DoesNotExist:
             return HttpResponse(status = 400)
         json = request.POST
-        lat = float(json.__getitem__("task_lat"))
-        lon = float(json.__getitem__("task_lon"))
+        try:
+            lat = float(json.__getitem__("task_lat"))
+            lon = float(json.__getitem__("task_lon"))
+        except ValueError:
+            return HttpResponse(status = 400)
         name = json.__getitem__("task_name")
         desc = json.__getitem__("task_desc")
         t_user = json.__getitem__("task_user")
         state = json.__getitem__("task_state")
         was_edited = False
         tag = ""
+        print 1
         if task.latitude != lat or \
         task.longitude != lon or \
         task.description != desc \
@@ -66,7 +72,7 @@ def saveTask(request, task_id):
             task.description = desc
             task.name = name
             was_edited = True
-            tag = "użytkownik %s zmienił zawartość zadania." % (request.user)
+            tag = "użytkownik %s zmienił treść zadania." % (request.user)
         if state != task.state:
             task.state = state
             tag += "użytkownik \"%s\" zmienił stan zadania na \"%s\"." % (request.user, DESCRIPTIONS[str(state)])

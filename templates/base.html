@@ -10,45 +10,48 @@
 <link href="{{STATIC_URL}}css/reset.css" rel="stylesheet">
 </head>
 <body>
-<header>
-		<a class="logo_left" href="/"></a>
-		<div class="login_right">
-            {%if user.username %}
-                    <div class="btn-group ">
-                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                                Witaj, {{user.username}}
-                            <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <a href="/user_main/">Wyświetl profil</a>
-                                <a href="/logout/">Wyloguj</a>
-                            </ul>
-                        </div>
-            {%else%}
-                <a class="btn btn-success" href="/login/">Zaloguj</a>
-            {%endif%}
-        </div>
-        <div class="time"><span class="label">{{current_time}}</span></div>
-</header>
-<div class="header_separator"></div>
-    {%block content%}
-    
-    {%endblock%}
-
-<footer>
-<div class="footer_separator"></div>
-<br>
-	<p class="footer_links">wykorzystane technologie i biblioteki:</p>
-	<p class="footer_links">
-		<a href="#">jquery</a> |
-		<a href="#">twitter bootstrap</a> |
-		<a href="#">html5</a> |
-		<a href="#">css3</a>
-	</p>
-	<p class="footer_author">Mateusz Banaszkiewicz 2012</p>
-</footer>
+<div id="wrap">
+	<div id="main">
+	<header>
+			<a class="logo_left" href="/"></a>
+			<div class="login_right">
+	            {%if user.username %}
+	                    <div class="btn-group ">
+	                            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+	                                Witaj, {{user.username}}
+	                            <span class="caret"></span>
+	                            </a>
+	                            <ul class="dropdown-menu">
+	                                <li><a href="/user_main/">Wyświetl profil</a></li>
+	                                <li><a href="/logout/">Wyloguj</a></li>
+	                            </ul>
+	                        </div>
+	            {%else%}
+	                <a class="btn btn-success" href="/login/">Zaloguj</a>
+	            {%endif%}
+	        </div>
+	        <div class="time"><span class="label">{{current_time}}</span></div>
+	</header>
+	<div class="header_separator"></div>
+	    {%block content%}
+	    
+	    {%endblock%}
+	</div>
+	<footer>
+	<div class="footer_separator"></div>
+	<br>
+		<p class="footer_links">wykorzystane technologie i biblioteki:</p>
+		<p class="footer_links">
+			<a href="#">jquery</a> |
+			<a href="#">twitter bootstrap</a> |
+			<a href="#">html5</a> |
+			<a href="#">css3</a>
+		</p>
+		<p class="footer_author">Mateusz Banaszkiewicz 2012</p>
+	</footer>
+</div>
 <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
-<script src="{{STATIC_URL}}js/script.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false&language=pl"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
@@ -61,6 +64,6 @@
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-collapse.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-typeahead.js"></script>
+<script src="{{STATIC_URL}}js/script.js"></script>
 </body>
 </html>
-
