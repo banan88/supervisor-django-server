@@ -1,5 +1,5 @@
 * {
-   outline: dotted 1px;
+   //outline: dotted 1px;
 }
 
 
@@ -120,11 +120,10 @@ background: linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 ); /* IE6-9 */
 
 	height: 80px;
-	position:absolute;
+	position:relative;
 	width:100%;
-	margin-bottom: 0px;
-	bottom: 0px;
-	display: block;
+	margin-top: -150px;
+	clear: both;
 }
 
 .footer_author {

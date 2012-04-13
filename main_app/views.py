@@ -35,11 +35,11 @@ def taskDetails(request, task_id):
     try:
         task = Task.objects.get(pk = task_id)
     except Task.DoesNotExist:
-        raise Http404
+        return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
     curr_desc = DESCRIPTIONS[str(task.state)]
     if request.user.is_authenticated():
         return render_to_response('user_main.html', {'task_details':True, 'task':task, 'curr_desc':curr_desc}, context_instance = RequestContext(request))
-
+    
 def saveTask(request, task_id):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)
