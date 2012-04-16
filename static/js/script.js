@@ -128,10 +128,32 @@ var ajax = {
 };
 
 $(document).ready(function () {
+	
+	if($(this).val() === "0")
+		$(".dateinput").removeAttr('disabled');
+	
+	
+	if ($('.dateinput').length) {
+		$( ".dateinput" ).datepicker($.datepicker.regional['pl']);
+		$(".dateinput").attr('disabled', 'true');
+
+		if($('#selecttime').val() == "0") {
+			$(".dateinput").removeAttr('disabled');
+		}	
+		
+		$("#selecttime").change(function(){
+			if($(this).val() === "0")
+				$(".dateinput").removeAttr('disabled');
+			else
+				$(".dateinput").attr('disabled', 'true');
+		});
+	}
+	
+	
+	
 	var lat = $('#inputlat').val();
 	var lon = $('#inputlon').val();
 	var name = $('#inputname').val();
-	
     googlemaps.initMap(lat, lon);
     googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
     
@@ -165,4 +187,6 @@ $(document).ready(function () {
 	  googlemaps.initMap(lat, lon);
 	  googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
   });
+  
+
 });

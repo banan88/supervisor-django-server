@@ -14,11 +14,12 @@ urlpatterns = patterns('',
     url(r'^$', 'main_app.views.index'),
     url(r'^user_main/$', 'main_app.views.userMain'),
     url(r'^tasks/(?P<task_id>\d+)/$', 'main_app.views.taskDetails'),
+    url(r'^tasks/$', 'main_app.views.tasks'),
     url(r'^save_task/(?P<task_id>\d+)/$', 'main_app.views.saveTask'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),
-    (r'^logout/$', logout, {'next_page':'/'}),
+    (r'^logout/$', logout),
     url(r'^create_task/$', 'main_app.views.createTask'),
     url(r'^edit_task_state/(?P<task_id>\d+)/(?P<state>\d)/$', 'main_app.views.editTaskState'),
     url(r'^get_user_tasks/(?P<field_user_id>\d+)/$', 'main_app.views.getUserTasks', name = "all"),

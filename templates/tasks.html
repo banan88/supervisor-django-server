@@ -1,0 +1,46 @@
+{% extends "user_main.html" %}
+
+{% block title %} Supervisor: zadania {% endblock %}
+
+{% block user_main_content %}
+           <form class="well">
+                    <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania"/> 
+                    <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący"/> <br> <br>
+                    <select id="selectstate" class="input">
+                        <option value="4" >Dowolny stan</option>
+                        	<option value="3">Wykonane</option>
+                        	<option value="2">Aktywne</option>
+                        	<option value="1">Oczekujące</option>
+                        	<option value="0">Anulowane</option>
+                      </select> 
+                      
+                      <select id="selecttime">
+                        <option value="4">Dowolny okres</option>
+                        	<option value="3">Z dziś</option>
+                        	<option value="2">Z wczoraj</option>
+                        	<option value="1">Ostatni tydzień</option>
+                        	<option value="0">Zakres dat</option>
+                      </select>
+		 <input id="dateFrom" class="input-small dateinput" type="textbox" placeholder="Od"/> 
+		 <input id="dateTo" class="input-small dateinput" type="textbox" placeholder="Do"/> <br><br>
+		 <a id="save_task" class="btn btn-primary" type="submit">
+                	<i class="icon-search"></i>
+                    Szukaj
+                </a>                  
+           </form>
+           
+           <div class="well">
+           		<ul>
+           		{% for task in tasks %}
+           			<li><a href="/tasks/{{task.pk}}">{{task.name}}</a></li>
+           		{% endfor %}
+           		</ul>
+           </div>
+{% endblock %}
+
+
+{% block bonus_script %}
+	<link rel="stylesheet" href="http://jquery-ui.googlecode.com/svn/tags/1.8.18/themes/cupertino/jquery.ui.all.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-pl.js"></script>
+{% endblock %}

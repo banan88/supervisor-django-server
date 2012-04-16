@@ -20,10 +20,11 @@ DESCRIPTIONS = {'0':'Anulowane', '1':'Oczekujące', '2':'Aktywne', '3':'Wykonane
 def timeContext(request):
     return {'current_time': datetime.time(datetime.now())}
 
-
 def index(request):
     return render_to_response('index.html', context_instance = RequestContext(request))
 
+
+@login_required(login_url='/login/')
 def userMain(request):
     if request.user.is_authenticated():
         user = request.user
@@ -31,6 +32,8 @@ def userMain(request):
     else:
         return redirect('/login/')
 
+
+@login_required(login_url='/login/')
 def taskDetails(request, task_id):
     try:
         task = Task.objects.get(pk = task_id)
@@ -38,10 +41,19 @@ def taskDetails(request, task_id):
         return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
     curr_desc = DESCRIPTIONS[str(task.state)]
     if request.user.is_authenticated():
-        print task.latitude
         return render_to_response('user_main.html', {'task_details':True, 'task':task, 'lat': str(task.latitude),
                     'lon': str(task.longitude), 'curr_desc':curr_desc}, context_instance = RequestContext(request))
-    
+    else:
+         return redirect('/login/')
+
+
+@login_required(login_url='/login/')
+def tasks(request):
+    tasks = Task.objects.all()
+    return render_to_response('tasks.html', {'tasks':tasks}, context_instance = RequestContext(request))
+
+
+@login_required(login_url='/login/')
 def saveTask(request, task_id):
     if not request.user.is_authenticated():
         return HttpResponse(status = 401)

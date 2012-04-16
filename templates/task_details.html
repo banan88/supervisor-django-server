@@ -20,10 +20,18 @@
                   <div class="controls">
                     <select id="selectstate" disabled>
                         <option value="{{task.state}}">{{curr_desc}}</option>
-                        <option value="3">Wykonane</option>
-                        <option value="2">Aktywne</option>
-                        <option value="1">Oczekujące</option>
-                        <option value="0">Anulowane</option>
+                        {% if not task.state == "3" %}
+                        	<option value="3">Wykonane</option>
+                        {% endif %}
+                        {% if not task.state == "2" %}
+                        	<option value="2">Aktywne</option>
+                        {% endif %}
+                        {% if not task.state == "1" %}
+                        	<option value="1">Oczekujące</option>
+                        {% endif %}
+                        {% if not task.state == "0" %}
+                        	<option value="0">Anulowane</option>
+                        {% endif %}
                       </select>
                   </div>
                 <br> 
@@ -48,13 +56,20 @@
               </fieldset>
             <div class="form-actions">
                 <a id="edit_task" class="btn" type="edit">
+                	<i class="icon-asterisk"></i>
                     Modyfikuj
                 </a>
                 <a id="save_task" class="btn btn-success" type="submit">
+                	<i class="icon-ok"></i>
                     Zatwierdź
                 </a>
                 <a id="cancel_change" class="btn btn-warning" type="submit">
-                    Anuluj
+                	<i class="icon-ban-circle"></i>
+                    Anuluj zmiany
+                </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a id="show_history" class="btn btn-info" href="/task_history/{{task.pk}}">
+                	<i class="icon-book"></i>
+                    Pokaż historię zadania
                 </a>
               </div>
              </form>

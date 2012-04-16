@@ -7,9 +7,10 @@
 <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
 <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
 <link href="{{STATIC_URL}}css/main.css" rel="stylesheet">
-<link href="{{STATIC_URL}}css/reset.css" rel="stylesheet">
+<link href="{{STATIC_URL}}css/reset.css" rel="stylesheet"> 
 </head>
 <body>
+
 <div id="wrap">
 	<div id="main">
 	<header>
@@ -64,6 +65,8 @@
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-collapse.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
 <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-typeahead.js"></script>
+{% block bonus_script %}
+{% endblock %}
 <script src="{{STATIC_URL}}js/script.js"></script>
 </body>
 </html>
