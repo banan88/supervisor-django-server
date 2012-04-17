@@ -125,7 +125,7 @@ background: -webkit-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,23
 background: -o-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* Opera 11.10+ */
 background: -ms-linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* IE10+ */
 background: linear-gradient(top,  rgba(242,245,246,1) 0%,rgba(227,234,237,1) 37%,rgba(200,215,220,1) 100%); /* W3C */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 ); /* IE6-9 */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f5f6', endColorstr='#c8d7dc',GradientType=0 );w /* IE6-9 */
 
 	height: 80px;
 	position:relative;
@@ -172,7 +172,7 @@ div#map{
     border-width:1px;
 	border-color: gray;
 	height: 450px;
-    width: 750px;
+    width: 90%;
     margin: 0px auto;
 }
 

@@ -118,7 +118,7 @@ SECRET_KEY = 'n8(lono$*h8z*hqygd=n6t=@huf)b%92r4dav*7143axd0qyl2'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = DEFAULT_SETTINGS.TEMPLATE_CONTEXT_PROCESSORS +(
@@ -140,7 +140,6 @@ ROOT_URLCONF = 'supervisor-django-server.urls'
 
 TEMPLATE_DIRS = (
     os.path.join(DIRNAME,'templates'),
-    os.path.join(DIRNAME,'templates/ajax'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

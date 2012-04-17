@@ -30,11 +30,49 @@
            </form>
            
            <div class="well">
-           		<ul>
-           		{% for task in tasks %}
-           			<li><a href="/tasks/{{task.pk}}">{{task.name}}</a></li>
+           		<table class="table table-striped">
+				<thead><tr>
+					<th>Nazwa zadania</th>
+					<th>Przydzielone dla</th>
+					<th>Data modyfikacji</th>
+				</tr></thead>
+			<tbody>
+           		{% for task in tasks %}				
+           			<tr>
+					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.name}}</a></td>
+					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.supervisor}}</a></td>
+					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.last_modified}}</a></td>
+				</tr>
            		{% endfor %}
-           		</ul>
+			</tbody>
+           		</table>
+			<div class="pagination centered_description">
+			    <ul>
+			    
+				{% if page.has_previous %} 
+				<li >
+				    <a href="?page={{ contacts.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-left"></i></a>
+				</li>
+			        {% endif %}			
+				<li>
+				<a>
+				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				</a>
+				</li>
+				{% if page.has_next %} 
+				<li >
+				    <a href="?page={{ contacts.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-right"></i></a>
+				</li>
+			        {% endif %}
+			</div>
            </div>
 {% endblock %}
 

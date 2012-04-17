@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.template import loader
 from django.template.context import RequestContext
 from django.template import Context, Template
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, Http404, HttpResponse
@@ -50,7 +51,15 @@ def taskDetails(request, task_id):
 @login_required(login_url='/login/')
 def tasks(request):
     tasks = Task.objects.all()
-    return render_to_response('tasks.html', {'tasks':tasks}, context_instance = RequestContext(request))
+    paginator = Paginator(tasks, 5)
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except Exception, e:
+        page = paginator.page(1)
+            
+    return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
