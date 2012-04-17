@@ -3,10 +3,12 @@
 {% block title %} Supervisor: zadania {% endblock %}
 
 {% block user_main_content %}
-           <form class="well">
-                    <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania"/> 
-                    <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący"/> <br> <br>
-                    <select id="selectstate" class="input">
+           <form class="well" method="get" action="/search/">
+                    <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania" name="name"/>
+                    <div id="namesuggest" class="suggest"></div>
+                    <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący" name="user"/>
+                    <div id="usersuggest" class="suggest"></div> <br> <br>
+                    <select id="selectstate" class="input" name="state">
                         <option value="4" >Dowolny stan</option>
                         	<option value="3">Wykonane</option>
                         	<option value="2">Aktywne</option>
@@ -14,39 +16,41 @@
                         	<option value="0">Anulowane</option>
                       </select> 
                       
-                      <select id="selecttime">
+                      <select id="selecttime" name="time">
                         <option value="4">Dowolny okres</option>
                         	<option value="3">Z dziś</option>
                         	<option value="2">Z wczoraj</option>
                         	<option value="1">Ostatni tydzień</option>
                         	<option value="0">Zakres dat</option>
                       </select>
-		 <input id="dateFrom" class="input-small dateinput" type="textbox" placeholder="Od"/> 
-		 <input id="dateTo" class="input-small dateinput" type="textbox" placeholder="Do"/> <br><br>
-		 <a id="save_task" class="btn btn-primary" type="submit">
-                	<i class="icon-search"></i>
-                    Szukaj
-                </a>                  
+		 <input id="dateFrom" class="input-small dateinput" type="textbox" placeholder="Od" name="from"/> 
+		 <input id="dateTo" class="input-small dateinput" type="textbox" placeholder="Do" name="to"/> <br><br>
+		 <button type="submit" class="btn btn-primary">
+		 	 <i class="icon-search"></i> Szukaj
+		 </button>       
            </form>
            
            <div class="well">
-           		<table class="table table-striped">
+           		<table class="table table-bordered table-condensed">
 				<thead><tr>
 					<th>Nazwa zadania</th>
 					<th>Przydzielone dla</th>
-					<th>Data modyfikacji</th>
+					<th>Stan</th>
+					<th>Ostatnia modyfikacja</th>
 				</tr></thead>
 			<tbody>
            		{% for task in tasks %}				
            			<tr>
 					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.name}}</a></td>
 					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.supervisor}}</a></td>
+					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.state}}</a></td>
 					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.last_modified}}</a></td>
 				</tr>
            		{% endfor %}
 			</tbody>
            		</table>
-			<div class="pagination centered_description">
+           </div>
+           <div class="pagination centered_description">
 			    <ul>
 			    
 				{% if page.has_previous %} 
@@ -73,7 +77,6 @@
 				</li>
 			        {% endif %}
 			</div>
-           </div>
 {% endblock %}
 
 

@@ -16,6 +16,9 @@ urlpatterns = patterns('',
     url(r'^tasks/(?P<task_id>\d+)/$', 'main_app.views.taskDetails'),
     url(r'^tasks/$', 'main_app.views.tasks'),
     url(r'^save_task/(?P<task_id>\d+)/$', 'main_app.views.saveTask'),
+    url(r'^getusersuggestions/$', 'main_app.views.getUserSuggestions'),
+    url(r'^getnamesuggestions/$', 'main_app.views.getNameSuggestions'),
+    url(r'^search/$', 'main_app.views.search'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),

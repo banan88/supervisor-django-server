@@ -176,3 +176,27 @@ div#map{
     margin: 0px auto;
 }
 
+#usersuggest{
+		display:none;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		background-color: #b3b3b3;
+		width:170px;
+		position: fixed;
+		padding: 5px;
+		margin: 0px 185px;
+		text-align:center;
+}
+
+#namesuggest{
+		display:none;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		background-color: #b3b3b3;
+		width:170px;
+		position: fixed;
+		padding: 5px;
+		text-align:center;
+}
+
+

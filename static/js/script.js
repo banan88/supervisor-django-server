@@ -19,6 +19,46 @@ var util = {
 			        }
 			        return cookieValue;
 		    	},
+		    	
+	suggestUsers : function() {
+		$.ajax({ type: "POST",   
+	         url: "/getusersuggestions/",
+	         async: false,
+	         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
+	         data: {'q':$("#inputuser").val()},
+	         success : function(json)
+	         {
+	        	 if( !($.isEmptyObject(json))){
+	        		 $('#usersuggest').empty().show();
+		        	 for(var key in json){
+		        		 $('#usersuggest').append('<a class = "user_suggestion" href=\"#\">' +json[key]+ '</a><br>');
+		        	 }
+	        	 }
+	        	 else
+	        		 $('#usersuggest').hide();
+	         }
+		});
+	},
+	
+	suggestNames : function() {
+		$.ajax({ type: "POST",   
+	         url: "/getnamesuggestions/",
+	         async: false,
+	         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
+	         data: {'q':$("#inputname").val()},
+	         success : function(json)
+	         {
+	        	 if( !($.isEmptyObject(json))){
+	        		 $('#namesuggest').empty().show();
+	        		 for(var key in json){
+	        			 $('#namesuggest').append('<a class = "name_suggestion" href=\"#\">' +json[key]+ '</a><br>');
+	        		 } 
+	        	 }
+	        	 else
+	        		 $('#namesuggest').hide();
+	         }
+		});
+	},
 
 };
 
@@ -129,6 +169,17 @@ var ajax = {
 
 $(document).ready(function () {
 	
+	$('body').on('click', 'a.user_suggestion', function() {
+	    var txt = $(this).text();
+	    $("#inputuser").val(txt);
+	});
+	
+	$('body').on('click', 'a.name_suggestion', function() {
+	    var txt = $(this).text();
+	    $("#inputname").val(txt);
+	});
+
+	
 	if($(this).val() === "0")
 		$(".dateinput").removeAttr('disabled');
 	
@@ -149,13 +200,38 @@ $(document).ready(function () {
 		});
 	}
 	
+	$('#inputname').keyup(function(event) {
+		if($(this).val().length > 3)
+			util.suggestNames();
+		else if($(this).val().length == 0)
+			$("#namesuggest").hide();
+	});
 	
+	$('#inputname').blur(function(){
+		setTimeout(function(){
+			$("#namesuggest").hide();
+	    }, 250);
+	});
+	
+	$('#inputuser').keyup(function(event) {
+		if($(this).val().length > 3)
+			util.suggestUsers();
+		else if($(this).val().length == 0)
+			$("#usersuggest").hide();
+	});
+	
+	$('#inputuser').blur(function(){
+		setTimeout(function(){
+			$("#usersuggest").hide();
+	    }, 250);
+	});
+
 	
 	var lat = $('#inputlat').val();
 	var lon = $('#inputlon').val();
 	var name = $('#inputname').val();
     googlemaps.initMap(lat, lon);
-    googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
+    googlemaps.addMarker(lat, lon, googlemaps.choaoseIcon(), name);
     
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');

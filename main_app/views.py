@@ -13,13 +13,13 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.utils import simplejson
 from main_app.models import *
-from datetime import datetime
+import datetime
 
 
 DESCRIPTIONS = {'0':'Anulowane', '1':'Oczekujące', '2':'Aktywne', '3':'Wykonane'}
 
 def timeContext(request):
-    return {'current_time': datetime.time(datetime.now())}
+    return {'current_time': datetime.datetime.time(datetime.datetime.now())}
 
 def index(request):
     return render_to_response('index.html', context_instance = RequestContext(request))
@@ -60,6 +60,103 @@ def tasks(request):
         page = paginator.page(1)
             
     return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
+
+
+def getUserSuggestions(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            q = request.POST.get('q')
+            users = User.objects.all()
+            print 1
+            try:
+                users_queryset = users.filter(username__startswith=q)[:4]
+            except IndexError:
+                pass
+            print 2
+            suggestions = []
+            for u in users_queryset:
+                suggestions.append(u.username)
+            suggestions = dict(enumerate(suggestions))
+            json = simplejson.dumps(suggestions)
+            print json
+            return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(status=400)
+
+def getNameSuggestions(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            q = request.POST.get('q')
+            tasks = Task.objects.all()
+            try:
+                tasks_queryset = tasks.filter(name__startswith=q)[:4]
+            except IndexError:
+                pass
+            suggestions = []
+            for t in tasks_queryset:
+                suggestions.append(t.name)
+            suggestions = dict(enumerate(suggestions))
+            json = simplejson.dumps(suggestions)
+            return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(status=400)
+
+@login_required(login_url='/login/')
+def search(request):
+    if request.method == 'GET':
+        query = request.GET
+        tasks = Task.objects.all()
+        name = query.get('name', False)
+        if name:
+            tasks = tasks.filter(name=name)
+        username = query.get('user', False)
+        if username:
+            tasks = tasks.filter(fieldUser=User.objects.get(username =username))
+        print 'post userfilter'
+        print tasks
+        state = query.get('state', False)
+        if state:
+            if not state == '4':
+                tasks = tasks.filter(state=state)
+        print 'post statefilter'           
+        print tasks
+        time = query.get('time', False)
+        if time:
+            if time == '0':
+                t_from = query.get('from', False)
+                t_from = t_from.split('-')
+                print t_from
+                t_from = datetime.date(int(t_from[0]), int(t_from[1]), int(t_from[2]))
+                t_to = query.get('to', False)
+                t_to = t_to.split('-')
+                t_to = datetime.date(int(t_to[0]), int(t_to[1]), int(t_to[2]))
+                if t_from and t_to:
+                    tasks = tasks.filter(last_modified__gte = t_from)
+                    tasks = tasks.filter(last_modified__lte = t_to)
+                print 'post time 0:'
+                print tasks
+            elif time == '1':
+                date_n_ago = datetime.datetime.today() - datetime.timedelta(days=7)
+                tasks = tasks.filter(last_modified__gte = date_n_ago)
+                print 'post time 1:'
+                print tasks
+            elif time == '2':
+                date_n_ago = datetime.datetime.today() - timedelta(days=1)
+                tasks = tasks.filter(last_modified__gte = date_n_ago)
+                print 'post time 2:'
+                print tasks
+            elif time == '3':
+                tasks = tasks.filter(last_modified__gte = datetime.datetime.today())
+                print 'post time 3:'
+                print tasks
+        print 'post all filters'
+        print tasks
+        paginator = Paginator(tasks, 5)
+        try:
+            page = paginator.page(request.GET.get('page', 1))
+        except EmptyPage:
+            page = paginator.page(paginator.num_pages)
+        except Exception, e:
+            page = paginator.page(1)
+        return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
