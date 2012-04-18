@@ -55,7 +55,7 @@
 			    
 				{% if page.has_previous %} 
 				<li >
-				    <a href="?page={{ contacts.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
@@ -69,7 +69,7 @@
 				</li>
 				{% if page.has_next %} 
 				<li >
-				    <a href="?page={{ contacts.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
