@@ -27,11 +27,35 @@ def index(request):
 
 @login_required(login_url='/login/')
 def userMain(request):
-    if request.user.is_authenticated():
-        user = request.user
-        return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
-    else:
-        return redirect('/login/')
+    user = request.user
+    tasks_created = Task.objects.filter(supervisor__pk = request.user.pk) #all created
+    tasks_current = tasks_created.filter(state='2')
+    tasks_pending = tasks_created.filter(state='1')
+    tasks_done = tasks_created.filter(state='3')
+    tasks_cancelled = tasks_created.filter(state='0')
+
+    supervised_users = User.objects.filter(id__in =
+            tasks_created.filter(state__in=['2','1'])
+            .order_by('date_modified')
+            .values_list('fieldUser__id', flat=True)
+        )
+    paginator = Paginator(supervised_users, 10)
+    
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except Exception, e:
+        page = paginator.page(1)
+    return render_to_response('user_main.html', {
+        'tasks_created':tasks_created.count(),
+        'tasks_current':tasks_current.count(),
+        'tasks_pending':tasks_pending.count(),
+        'tasks_done':tasks_done.count(),
+        'tasks_cancelled':tasks_cancelled.count(),
+        'supervised_users':supervised_users,
+        'page':page},
+        context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
@@ -39,13 +63,10 @@ def taskDetails(request, task_id):
     try:
         task = Task.objects.get(pk = task_id)
     except Task.DoesNotExist:
-        return render_to_response('user_main.html', {'task_details':False}, context_instance = RequestContext(request))
+        raise Http404
     curr_desc = DESCRIPTIONS[str(task.state)]
-    if request.user.is_authenticated():
-        return render_to_response('user_main.html', {'task_details':True, 'task':task, 'lat': str(task.latitude),
+    return render_to_response('task_details.html', {'task':task, 'lat': str(task.latitude),
                     'lon': str(task.longitude), 'curr_desc':curr_desc}, context_instance = RequestContext(request))
-    else:
-         return redirect('/login/')
 
 
 @login_required(login_url='/login/')
@@ -65,7 +86,7 @@ def tasks(request):
 @login_required(login_url='/login/')
 def taskHistory(request, task_id):
     task = Task.objects.get(pk=task_id)
-    tasks_history = TaskHistory.objects.get(task = task)
+    tasks_history = TaskStateHistory.objects.get(task = task)
     paginator = Paginator(tasks_history, 10)
     try:
         page = paginator.page(request.GET.get('page', 1))
@@ -81,15 +102,34 @@ def getUserSuggestions(request):
     if request.is_ajax():
         if request.method == 'POST':
             q = request.POST.get('q')
-            users = User.objects.all()
+            profiles = FieldUserProfile.objects.all()
             print 1
             try:
-                users_queryset = users.filter(username__startswith=q)[:4]
-            except IndexError:
+                profiles_queryset = profiles.filter(user__username__startswith=q)[:4]
+            except IndexError, User.DoesNotExist:
                 pass
             print 2
             suggestions = []
-            for u in users_queryset:
+            for u in profiles_queryset:
+                suggestions.append(u.user.username)
+            suggestions = dict(enumerate(suggestions))
+            json = simplejson.dumps(suggestions)
+            print json
+            return HttpResponse(json, mimetype='application/json')
+    return HttpResponse(status=400)
+
+def getSuperSuggestions(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            q = request.POST.get('q')
+            supers = User.objects.exclude(id__in = FieldUserProfile.objects.all().values_list('user__id', flat=True))
+            try:
+                supers = supers.filter(username__startswith=q)[:4]
+            except IndexError, User.DoesNotExist:
+                pass
+            print 2
+            suggestions = []
+            for u in supers:
                 suggestions.append(u.username)
             suggestions = dict(enumerate(suggestions))
             json = simplejson.dumps(suggestions)
@@ -124,10 +164,26 @@ def search(request):
         if name:
             tasks = tasks.filter(name=name)
         username = query.get('user', False)
-        if username:
-            tasks = tasks.filter(fieldUser=User.objects.get(username =username))
+        try:
+            fieldUser = User.objects.get(username =username)
+        except User.DoesNotExist:
+            username = False
+        if username: #if user does not exist - ignore this search condition
+            tasks = tasks.filter(fieldUser=fieldUser)
         print 'post userfilter'
-        print tasks
+
+        supername = query.get('super', False)
+        try:
+            print supername
+            super = User.objects.get(username =supername)
+            print 2
+        except User.DoesNotExist:
+            print 'doesnot'
+            supername = False
+        if supername: #if super does not exist - ignore this search condition
+            print 3
+            tasks = tasks.filter(supervisor=super)
+            print 4
         state = query.get('state', False)
         if state:
             if not state == '4':
@@ -164,7 +220,7 @@ def search(request):
                 print 'post time 3:'
                 print tasks
         print 'post all filters'
-        print tasks
+        tasks = tasks.order_by('last_modified')
         paginator = Paginator(tasks, 5)
         try:
             page = paginator.page(request.GET.get('page', 1))

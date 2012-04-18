@@ -3,11 +3,14 @@
 {% block title %} Supervisor: zadania {% endblock %}
 
 {% block user_main_content %}
+			<p class="centered_description">Filtruj zadania</p><br>
            <form class="well" method="get" action="/search/">
                     <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania" name="name"/>
                     <div id="namesuggest" class="suggest"></div>
                     <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący" name="user"/>
-                    <div id="usersuggest" class="suggest"></div> <br> <br>
+                    <div id="usersuggest" class="suggest"></div>
+                    <input type="text" class="input-medium search-query" id="inputsuper" placeholder="Nadzorca zadania" name="super"/>
+                    <div id="supersuggest" class="suggest"></div> <br> <br>
                     <select id="selectstate" class="input" name="state">
                         <option value="4" >Dowolny stan</option>
                         	<option value="3">Wykonane</option>
@@ -17,7 +20,7 @@
                       </select> 
                       
                       <select id="selecttime" name="time">
-                        <option value="4">Dowolny okres</option>
+                        <option value="4">Dowolny okres zmian</option>
                         	<option value="3">Z dziś</option>
                         	<option value="2">Z wczoraj</option>
                         	<option value="1">Ostatni tydzień</option>
@@ -29,8 +32,9 @@
 		 	 <i class="icon-search"></i> Szukaj
 		 </button>       
            </form>
-           
+           <p class="centered_description">Lista zadań</p><br>
            <div class="well">
+           		
            		<table class="table table-bordered table-condensed">
 				<thead><tr>
 					<th>Nazwa zadania</th>

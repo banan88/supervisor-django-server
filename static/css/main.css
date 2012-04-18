@@ -199,4 +199,16 @@ div#map{
 		text-align:center;
 }
 
+#supersuggest{
+		display:none;
+		-moz-border-radius: 10px;
+		-webkit-border-radius: 10px;
+		background-color: #b3b3b3;
+		width:170px;
+		position: fixed;
+		padding: 5px;
+		margin: 0px 368px;
+		text-align:center;
+}
+
 

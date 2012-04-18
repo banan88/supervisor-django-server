@@ -40,6 +40,26 @@ var util = {
 		});
 	},
 	
+	suggestSuper : function() {
+		$.ajax({ type: "POST",   
+	         url: "/getsupersuggestions/",
+	         async: false,
+	         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));},
+	         data: {'q':$("#inputsuper").val()},
+	         success : function(json)
+	         {
+	        	 if( !($.isEmptyObject(json))){
+	        		 $('#supersuggest').empty().show();
+		        	 for(var key in json){
+		        		 $('#supersuggest').append('<a class = "super_suggestion" href=\"#\">' +json[key]+ '</a><br>');
+		        	 }
+	        	 }
+	        	 else
+	        		 $('#supersuggest').hide();
+	         }
+		});
+	},
+	
 	suggestNames : function() {
 		$.ajax({ type: "POST",   
 	         url: "/getnamesuggestions/",
@@ -174,6 +194,11 @@ $(document).ready(function () {
 	    $("#inputuser").val(txt);
 	});
 	
+	$('body').on('click', 'a.super_suggestion', function() {
+	    var txt = $(this).text();
+	    $("#inputsuper").val(txt);
+	});
+	
 	$('body').on('click', 'a.name_suggestion', function() {
 	    var txt = $(this).text();
 	    $("#inputname").val(txt);
@@ -225,13 +250,26 @@ $(document).ready(function () {
 			$("#usersuggest").hide();
 	    }, 250);
 	});
+	
+	$('#inputsuper').keyup(function(event) {
+		if($(this).val().length > 3)
+			util.suggestSuper();
+		else if($(this).val().length == 0)
+			$("#supersuggest").hide();
+	});
+	
+	$('#inputsuper').blur(function(){
+		setTimeout(function(){
+			$("#supersuggest").hide();
+	    }, 250);
+	});
 
 	
 	var lat = $('#inputlat').val();
 	var lon = $('#inputlon').val();
 	var name = $('#inputname').val();
     googlemaps.initMap(lat, lon);
-    googlemaps.addMarker(lat, lon, googlemaps.choaoseIcon(), name);
+    googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
     
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');
