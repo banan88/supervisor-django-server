@@ -51,7 +51,7 @@ def taskDetails(request, task_id):
 @login_required(login_url='/login/')
 def tasks(request):
     tasks = Task.objects.all()
-    paginator = Paginator(tasks, 5)
+    paginator = Paginator(tasks, 10)
     try:
         page = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
@@ -60,6 +60,21 @@ def tasks(request):
         page = paginator.page(1)
             
     return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
+
+
+@login_required(login_url='/login/')
+def taskHistory(request, task_id):
+    task = Task.objects.get(pk=task_id)
+    tasks_history = TaskHistory.objects.get(task = task)
+    paginator = Paginator(tasks_history, 10)
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except Exception, e:
+        page = paginator.page(1)
+            
+    return render_to_response('tasks.html', {'task':task, 'tasks_history':tasks_history, 'page':page}, context_instance = RequestContext(request))
 
 
 def getUserSuggestions(request):
@@ -98,6 +113,7 @@ def getNameSuggestions(request):
             json = simplejson.dumps(suggestions)
             return HttpResponse(json, mimetype='application/json')
     return HttpResponse(status=400)
+    
 
 @login_required(login_url='/login/')
 def search(request):
