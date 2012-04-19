@@ -1,0 +1,77 @@
+{% extends "user_main.html" %}
+
+{% block title %} Supervisor: historia dla {{task.name}} {% endblock %}
+
+{% block user_main_content %}
+	<div class="centered_description">Historia zmian dla <a href="/tasks/{{task.pk}}">{{task.name}}</a>:<br><br></div>
+           <div style="padding: 10px;]">			
+           		<table class="table table-bordered table-condensed table-striped">
+				<thead><tr>
+					<th>Stan po edycji</th>
+					<th>Czy zmieniono treść</th>
+					<th>Zmienione przez</th>
+					<th>Czas zmiany</th>
+					<th>Długość</th>
+					<th>Szerokość</th>
+				</tr></thead>
+			<tbody>
+           		{% for task_history in tasks_history %}				
+           			<tr>
+					<td><a href="/tasks/{{task.pk}}">{{task_history.state_changed_to}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">
+					{% if task_history.content_edited %}
+						Tak
+					{% else %}
+						Nie
+					{% endif %}
+					</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task_history.user_editor}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task_history.change_time}}</a></td>
+					<td>{% if task_history.change_latitude %}
+						<a href="/tasks/{{task.pk}}">{{task_history.change_latitude}}</a>
+						{%else%}siedziba firmy{%endif%}</td>
+					<td>{% if task_history.change_longitude %}
+						<a href="/tasks/{{task.pk}}">{{task_history.change_longitude}}</a>
+						{%else%}siedziba firmy{%endif%}</td>
+				</tr>
+				<tr>
+					<td colspan="6">
+					<i class="icon-chevron-up"></i>{{task_history.change_description}}
+					</td>
+				</tr>
+           		{% endfor %}
+			</tbody>
+           		</table>
+           </div>
+           <div class="pagination centered_description">
+			    <ul>
+
+				{% if page.has_previous %} 
+				<li >
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-left"></i></a>
+				</li>
+			        {% endif %}			
+				<li>
+				<a>
+				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				</a>
+				</li>
+				{% if page.has_next %} 
+				<li >
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-right"></i></a>
+				</li>
+			        {% endif %}
+			</div>
+{% endblock %}
+
+
+{% block bonus_script %}
+{% endblock %}

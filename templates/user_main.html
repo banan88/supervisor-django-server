@@ -10,13 +10,8 @@
           
           <ul class="nav nav-tabs nav-stacked">  <li class="alert alert-info ">Zadania</li>
             <li><a href="/add_task/"><i class="icon-file"></i> Dodaj zadanie</a></li>
-            <li><a href="/add_user/"><i class="icon-search"></i> Wyszukaj zadanie</a></li>
-            <li><a href="/add_user/"><i class="icon-th-list"></i></i> Wszystkie zadania</a></li>
-          </ul>
-          <ul class="nav nav-tabs nav-stacked">  <li class="alert alert-info">Użytkownicy</li>
-            <li><a href="/add_task/"><i class="icon-user"></i> Dodaj użytkownika</a></li>
-            <li><a href="/add_user/"><i class="icon-search"></i></i> Wyszukaj użytkownika</a></li>
-            <li><a href="/add_user/"><i class="icon-th"></i></i> Wszyscy użytkownicy</a></li>
+            <li><a href="/tasks/"><i class="icon-search"></i> Wyszukaj / Wszystkie</a></li>
+            <li><a href="/user_main/"><i class="icon-th-list"></i></i> Twój profil</a></li>
           </ul>
         </nav>
         <div class="span8 content">
@@ -49,7 +44,7 @@
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=0&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
-		               		<td>Łącznie:</td><td># {{tasks_created}}</td><td>
+		               		<td>Łącznie:</td><td>{{tasks_created}}</td><td>
 		               		<a class="btn" href="/search/?name=&user=&super=super&state=4&time=4">Wyświetl</a></td>
 		               		</tr>
                			</tbody>
@@ -66,8 +61,8 @@
 			<tbody>
            		{% for user in supervised_users %}				
            			<tr>
-					<td><a href="/tasks/{{task.pk}}">{{user.username}}</a></td>
-					<td><a class="btn" href="/search/?name=&user={{user.username}}&super={{request.user.username}}&state=2&time=4">Wyświetl</a></td>
+					<td><a href="/field_user/{{user.pk}}">{{user.username}}</a></td>
+					<td><a class="btn" href="/search/?name=&user={{user.username}}&super={{request.user.username}}&state=4&time=4">Wyświetl</a></td>
 				</tr>
            		{% endfor %}
 			</tbody>
@@ -105,10 +100,10 @@
              
         </div>
 	    <aside class="span2 content">
-          <ul class="nav nav-tabs nav-stacked">  <li class="alert alert-info">Aktywne zadania dla 
-                                <span class="label label-info">user</span></li>
-            <li><a href="/add_task/"><i class="icon-plus-sign"></i><i class="icon-file"></i>Dodaj zadanie</a></li>
-            <li><a href="/add_user/"><i class="icon-plus-sign"></i><i class="icon-user"></i>Dodaj użytkownika</a></li>
+          <ul class="nav nav-tabs nav-stacked">  <li class="alert alert-info">Użytkownicy</li>
+            <li><a href="/add_user/"><i class="icon-user"></i> Dodaj użytkownika</a></li>
+            <li><a href="/search_user/"><i class="icon-search"></i></i> Wyszukaj użytkownika</a></li>
+            <li><a href="/field_user/"><i class="icon-th"></i></i> Wszyscy użytkownicy</a></li>
           </ul>
         </aside>
       </div>

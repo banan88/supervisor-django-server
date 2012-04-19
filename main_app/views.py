@@ -15,11 +15,24 @@ from django.utils import simplejson
 from main_app.models import *
 import datetime
 
+# latitude +- 90 longitude +-180 - check to do
 
 DESCRIPTIONS = {'0':'Anulowane', '1':'Oczekujące', '2':'Aktywne', '3':'Wykonane'}
 
 def timeContext(request):
     return {'current_time': datetime.datetime.time(datetime.datetime.now())}
+
+
+def isSupervisor(request): #check if user is not a fieldUser -> if he is, no access to web interface is granted
+    test = False
+    try:
+        user = FieldUserProfile.objects.get(user = request.user)
+    except FieldUserProfile.DoesNotExist:
+        test = True
+    return test
+
+
+
 
 def index(request):
     return render_to_response('index.html', context_instance = RequestContext(request))
@@ -27,6 +40,8 @@ def index(request):
 
 @login_required(login_url='/login/')
 def userMain(request):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     user = request.user
     tasks_created = Task.objects.filter(supervisor__pk = request.user.pk) #all created
     tasks_current = tasks_created.filter(state='2')
@@ -36,7 +51,7 @@ def userMain(request):
 
     supervised_users = User.objects.filter(id__in =
             tasks_created.filter(state__in=['2','1'])
-            .order_by('date_modified')
+            .order_by('-date_modified')
             .values_list('fieldUser__id', flat=True)
         )
     paginator = Paginator(supervised_users, 10)
@@ -60,6 +75,8 @@ def userMain(request):
 
 @login_required(login_url='/login/')
 def taskDetails(request, task_id):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     try:
         task = Task.objects.get(pk = task_id)
     except Task.DoesNotExist:
@@ -71,7 +88,9 @@ def taskDetails(request, task_id):
 
 @login_required(login_url='/login/')
 def tasks(request):
-    tasks = Task.objects.all()
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    tasks = Task.objects.all().order_by('-last_modified')
     paginator = Paginator(tasks, 10)
     try:
         page = paginator.page(request.GET.get('page', 1))
@@ -85,8 +104,14 @@ def tasks(request):
 
 @login_required(login_url='/login/')
 def taskHistory(request, task_id):
-    task = Task.objects.get(pk=task_id)
-    tasks_history = TaskStateHistory.objects.get(task = task)
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    try:
+        task = Task.objects.get(pk = task_id)
+    except Task.DoesNotExist:
+        raise Http404
+    tasks_history = TaskStateHistory.objects.filter(task__id = task.id).order_by('-change_time')
+    print tasks_history
     paginator = Paginator(tasks_history, 10)
     try:
         page = paginator.page(request.GET.get('page', 1))
@@ -94,11 +119,13 @@ def taskHistory(request, task_id):
         page = paginator.page(paginator.num_pages)
     except Exception, e:
         page = paginator.page(1)
-            
-    return render_to_response('tasks.html', {'task':task, 'tasks_history':tasks_history, 'page':page}, context_instance = RequestContext(request))
+    return render_to_response('task_history.html', {'task':task, 'tasks_history':tasks_history, 'page':page}, context_instance = RequestContext(request))
 
 
+@login_required(login_url='/login/')
 def getUserSuggestions(request):
+    if not isSupervisor(request):
+        return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
             q = request.POST.get('q')
@@ -118,7 +145,10 @@ def getUserSuggestions(request):
             return HttpResponse(json, mimetype='application/json')
     return HttpResponse(status=400)
 
+@login_required(login_url='/login/')
 def getSuperSuggestions(request):
+    if not isSupervisor(request):
+        return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
             q = request.POST.get('q')
@@ -137,7 +167,10 @@ def getSuperSuggestions(request):
             return HttpResponse(json, mimetype='application/json')
     return HttpResponse(status=400)
 
+@login_required(login_url='/login/')
 def getNameSuggestions(request):
+    if not isSupervisor(request):
+        return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
             q = request.POST.get('q')
@@ -157,6 +190,8 @@ def getNameSuggestions(request):
 
 @login_required(login_url='/login/')
 def search(request):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     if request.method == 'GET':
         query = request.GET
         tasks = Task.objects.all()
@@ -220,7 +255,7 @@ def search(request):
                 print 'post time 3:'
                 print tasks
         print 'post all filters'
-        tasks = tasks.order_by('last_modified')
+        tasks = tasks.order_by('-last_modified')
         paginator = Paginator(tasks, 5)
         try:
             page = paginator.page(request.GET.get('page', 1))
@@ -233,8 +268,8 @@ def search(request):
 
 @login_required(login_url='/login/')
 def saveTask(request, task_id):
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
+    if not isSupervisor(request):
+        return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
         try:
             task = Task.objects.get(pk=task_id)
@@ -268,102 +303,57 @@ def saveTask(request, task_id):
             tag += "użytkownik \"%s\" zmienił stan zadania na \"%s\"." % (request.user, DESCRIPTIONS[str(state)])
         task.save()
         print "ok"
-        print tag
-        print was_edited
+        print "tag:" + tag
+        print "was_edited" + str(was_edited)
         if was_edited or tag != "":
-            task.updateTaskHistory(task, state, was_edited, request.user, datetime.now(), tag)
+            print 'update history'
+            task.updateTaskHistory(state, was_edited, request.user, datetime.datetime.now(), tag)
+            print 'finish update'
+        print "return"
         return HttpResponse(status = 200)
     return HttpResponse(status = 400)
 
-#def updateTaskHistory(self, task, new_state, was_content_edited, user, timestamp, tag):
+
+@login_required(login_url='/login/')
+def fieldUser(request, id):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    try:
+        fielduser = FieldUserProfile.objects.get(user__pk = id)
+    except FieldUserProfile.DoesNotExist:
+        raise Http404
+    return render_to_response('fielduser.html', {'fielduser':fielduser, 'lat':str(fielduser.last_latitude),
+            'lon':str(fielduser.last_longitude) }, context_instance = RequestContext(request))
 
 
-def getTasksInJson(user, opt_state):
-    tasks = Task.objects.filter(fieldUser = user)
-    if opt_state:
-        if opt_state not in ('0','1','2','3'):
-            return HttpResponse(status = 400)
-        tasks = tasks.filter(state = opt_state)
-    tasks = [{"pk" : task.pk,
-                             "supervisor" : str(task.supervisor),
-                             "fu" : str(task.fieldUser),
-                             "lat" : str(task.latitude),
-                             "lon" : str(task.longitude),
-                             "state" : str(task.state),
-                             "name" : str(task.name),
-                             "desc" : str(task.description),
-                             "created" : str(task.creation_time),
-                             "modified" : str(task.last_modified),
-                             "finished" : str(task.finish_time),
-                             "started" : str(task.start_time),
-                             "ver" : str(task.version),
-                             "last_sync" : str(task.last_synced),
-                             } for task in tasks] #all task params
-    json = simplejson.dumps(tasks)
-    return HttpResponse(json, mimetype = "application/json") 
-
-
-def createTask(request):
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
+@login_required(login_url='/login/')
+def loadPath(request, id):
+    if not isSupervisor(request):
+        return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
+        try:
+            fielduser = FieldUserProfile.objects.get(user__pk = id)
+        except FieldUserProfile.DoesNotExist:
+            return HttpResponse(status = 404)
         json = request.POST
-        try:
-            fuser = json.__getitem__("fuser")
-            lat = json.__getitem__("lat")
-            lon = json.__getitem__("lon")
-            name = json.__getitem__("name")
-            desc = json.__getitem__("desc")
+        print json
+        t_from = json.__getitem__("from")
+        t_from = t_from.split('-')
+        t_from = datetime.date(int(t_from[0]), int(t_from[1]), int(t_from[2]))
+        t_to = json.__getitem__("to")
+        t_to = t_to.split('-')
+        t_to = datetime.date(int(t_to[0]), int(t_to[1]), int(t_to[2]))
+        print t_to
+        print fielduser.user.username
+        locations = UserLocation.objects.filter(user = fielduser.user)
+        locations = locations.filter(timestamp__gte=t_from)
+        locations = locations.filter(timestamp__lte=t_to).order_by('-timestamp')
+        location_list = []
+        for l in locations:
+            tmp = {'timestamp':str(l.timestamp), 'lat':str(l.latitude), 'lon':str(l.longitude)}
+            location_list.append(tmp)
+        json = simplejson.dumps(location_list)
+        print json
+        return HttpResponse(json, mimetype='application/json')
+
         
-            task = Task()
-
-            try:
-                task.fieldUser = User.objects.get(pk = fuser)
-            except User.DoesNotExist:
-                raise KeyError
-
-            task.latitude = lat
-            task.longitude = lon
-            task.state = "1"
-            task.name = name
-            task.description = desc
-            task.supervisor = request.user
-        except KeyError:
-            return HttpResponse(status = 400)
-        task.save()
-        return HttpResponse(status = 200)
-    return HttpResponse(status = 400)
-    
-
-def editTaskState(request, task_id, state):
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
-    if request.is_ajax() and request.method == "GET":
-        if state not in ('0','1','2','3'):
-            return HttpResponse(status = 400)
-        try:
-            task = Task.objects.get(pk = task_id)
-        except Task.DoesNotExist:
-            return HttpResponse(status = 400)
-        if task.supervisor != request.user:
-            return HttpResponse(status = 401)
-        task.state = state
-        task.save()
-        return HttpResponse(status = 200)
-    return HttpResponse(status = 400)
-
- 
-    
-#zadania dla danego uzytkownika terenowego (wszystkie lub okreslonego stanu)
-def getUserTasks(request, field_user_id, opt_state = None):
-    if not request.user.is_authenticated():
-        return HttpResponse(status = 401)
-    if request.method == "GET":
-        try:
-            user = User.objects.get(pk = field_user_id)
-            user.fielduserprofile
-        except (FieldUserProfile.DoesNotExist, User.DoesNotExist):
-            return HttpResponse(status = 400)
-        return getTasksInJson(user = user, opt_state = opt_state)
-    return HttpResponse(status = 400)
-

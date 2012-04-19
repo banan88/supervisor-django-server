@@ -21,14 +21,12 @@ urlpatterns = patterns('',
     url(r'^getsupersuggestions/$', 'main_app.views.getSuperSuggestions'),
     url(r'^getnamesuggestions/$', 'main_app.views.getNameSuggestions'),
     url(r'^search/$', 'main_app.views.search'),
+    url(r'^field_user/(?P<id>\d+)/$', 'main_app.views.fieldUser'),
+    url(r'^load_path/(?P<id>\d+)/$', 'main_app.views.loadPath'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),
-    (r'^logout/$', logout),
-    url(r'^create_task/$', 'main_app.views.createTask'),
-    url(r'^edit_task_state/(?P<task_id>\d+)/(?P<state>\d)/$', 'main_app.views.editTaskState'),
-    url(r'^get_user_tasks/(?P<field_user_id>\d+)/$', 'main_app.views.getUserTasks', name = "all"),
-    url(r'^get_user_tasks/(?P<field_user_id>\d+)/(?P<opt_state>.*)/$', 'main_app.views.getUserTasks', name = "with_status"),
+    (r'^logout/$', logout, {'next_page': '/'}),
     
     #remote api urls
     url(r'^get_n_tasks/(?P<count>\d+)/$', 'main_app.api.getNTasks'),

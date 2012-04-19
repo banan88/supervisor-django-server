@@ -1,0 +1,66 @@
+{% extends 'user_main.html' %}
+
+{% block user_main_content %}
+	<p class="centered_description">Użytkownik terenowy <a>{{fielduser.user.username}}</a></p><br>
+	<div class="well">
+		<table class="table table-bordered">
+			<tbody>
+				<tr><td>Ostatnia szerokość geogr.</td><td><p id="inputlat">{% if lat == 'None' %}Brak danych{%else%}{{lat}}{% endif %}</p>
+				</td></tr>
+				<tr><td>Ostatnia długość geogr.</td><td><p id="inputlon">{% if lon == 'None' %}Brak danych{%else%}{{lon}}{% endif %}</p>
+				</td></tr>
+				<tr><td>Ostatnia synchronizacja z serwerem:</td><td>
+					{% if not fielduser.sync_time %}
+						Nigdy
+					{% else %}
+						{{fielduser.sync_time}}
+					{% endif %}
+				</td></tr>
+				<tr><td>Numer telefonu:</td><td>{{fielduser.phone_number}}</td></tr>
+				<tr><td>Numer IMEI urządzenia:</td><td>{{fielduser.imei_number}}</td></tr>
+				<tr><td>Adres domowy pracownika:</td><td>{{fielduser.home_adress}}</td></tr>
+			</tbody>
+		</table>
+	</div>
+	<p class="centered_description">Zadania przypisane <a>{{fielduser.user.username}}</a></p><br>
+	<div class="well">
+		<table class="table table-bordered">
+			<tbody>
+				<tr><td>Aktywne</td><td>
+				<a href="" class="btn">Wyświetl</a>
+				</td></tr>
+				<tr><td>Oczekujące</td><td>
+				<a href="" class="btn">Wyświetl</a>
+				</td></tr>
+				<tr><td>Wykonane</td><td>
+					<a href="" class="btn">Wyświetl</a>
+				</td></tr>
+				<tr><td>Anulowane</td><td><a href="" class="btn">Wyświetl</a></td></tr>
+				<tr><td>Wszystkie</td><td><a href="" class="btn">Wyświetl</a></td></tr>
+			</tbody>
+		</table>
+	</div>
+	<p class="centered_description">Aktualne położenie / Trasa dla <a>{{fielduser.user.username}}</a></p><br>
+	
+	<div class="well" >
+		<a id="location" class="btn btn-success" style="margin: 0px 40px;">Wyświetl aktualne położenie</a>
+		<br><br>
+		
+		<form class="form-inline" style="margin: 0px 40px;">
+		  <a id="path" class="btn">Wyświetl trasę dla dni</a>
+		  <input id="datefrom" type="textbox" class="input-small dateinputon" placeholder="Od" name="from" disabled="disabled"/>
+		  <input id="dateto" type="textbox" class="input-small dateinputon" placeholder="Do" name="to" disabled="disabled"/>
+		  <a id="show_path" class="btn disabled">Pokaż</a>		  
+		</form> <br>
+		
+		<div id="map_wrap">
+	       <div id="map"></div>
+	    </div>
+    </div>
+{% endblock %}
+
+{% block bonus_script %}
+	<link rel="stylesheet" href="http://jquery-ui.googlecode.com/svn/tags/1.8.18/themes/cupertino/jquery.ui.all.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-pl.js"></script>
+{% endblock %}

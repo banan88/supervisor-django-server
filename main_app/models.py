@@ -8,8 +8,8 @@ import datetime
 
 class FieldUserProfile(models.Model): 
     user = models.OneToOneField(User)
-    last_latitude = models.FloatField(blank = True, null = True)
-    last_longitude = models.FloatField(blank = True, null = True)
+    last_latitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8)
+    last_longitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8)
     imei_number = models.CharField(max_length = 30, blank = True, null = True)
     phone_numer = models.CharField(max_length = 20, blank = True, null = True)
     home_adress = models.CharField(max_length = 50, blank = True, null = True)
@@ -25,8 +25,8 @@ STATES = (
 
 class Task(models.Model):
     fieldUser = models.ForeignKey(User, related_name = 'fielduser_set') 
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.DecimalField(max_digits=11, decimal_places=8)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8)
     state = models.CharField(choices = STATES, max_length = 1)
     name = models.CharField(max_length = 30)
     description = models.TextField()
@@ -37,8 +37,8 @@ class Task(models.Model):
     supervisor = models.ForeignKey(User, related_name = 'user_set')                                        #nadzorca
     version = models.IntegerField(default = 0)                   #na podstawie tej wartosci przeprowadzana jest synchronizacja
 
-    def updateTaskHistory(self, task_pk, new_state, was_content_edited, user, timestamp, tag):
-        updatedHistory = TaskStateHistory(task = task_pk,
+    def updateTaskHistory(self, new_state, was_content_edited, user, timestamp, tag):
+        updatedHistory = TaskStateHistory(task = self,
                                           state_changed_to = new_state,
                                           content_edited = was_content_edited,
                                           user_editor = user,
@@ -51,8 +51,7 @@ class Task(models.Model):
         super(Task, self).save(*args, **kwargs)
         #przy tworzeniu zadania nie trzeba osobno wywolywac updateTaskHistory - hack do testow w django admin
         if self.version == 1:
-            savedTaskInstance = Task.objects.get(pk = self.pk)
-            self.updateTaskHistory(savedTaskInstance, self.state, True,
+            self.updateTaskHistory(self.state, True,
                 self.supervisor, datetime.datetime.now(),
                 u"zadanie zostalo utworzone przez użytkownika \"" + self.supervisor.username + "\"")
     
@@ -68,8 +67,8 @@ class TaskStateHistory(models.Model):
     user_editor = models.ForeignKey(User) #kto wykonal zmiane
     change_time = models.DateTimeField();
     change_description = models.CharField(max_length = 50)
-    change_latitude = models.FloatField(null = True)
-    change_longitude = models.FloatField(null = True)
+    change_latitude = models.DecimalField(null = True, max_digits=11, decimal_places=8) #coodinates where change was made
+    change_longitude = models.DecimalField(null = True, max_digits=11, decimal_places=8)
 
  
 class WorkDay(models.Model):
@@ -80,6 +79,6 @@ class WorkDay(models.Model):
 
 class UserLocation(models.Model):
     user = models.ForeignKey(User)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.DecimalField(max_digits=11, decimal_places=8)
+    longitude = models.DecimalField(max_digits=11, decimal_places=8)
     timestamp = models.DateTimeField()

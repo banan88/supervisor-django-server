@@ -85,9 +85,20 @@ var util = {
 var googlemaps = {
 	
 	default_map : null,
+	
+	markersArray : [],
+	
+	deleteOverlays : function() {
+		if (googlemaps.markersArray) {
+			for (i in googlemaps.markersArray) {
+				googlemaps.markersArray[i].setMap(null);
+		    }
+			googlemaps.markersArray.length = 0;
+		}
+	},
 		
     initMap : function(lat, lon) {
-    	if (lat === undefined || lon === undefined) {
+    	if ((lat === undefined || lon === undefined) || (parseFloat(lat) === NaN || parseFloat(lon) === NaN)) {
     		lat = 50.816327;
     		lon = 19.116479;
     	}
@@ -103,7 +114,8 @@ var googlemaps = {
 	    
     },
     
-    addMarker : function(lat, lon, image, text) {
+    showLocation : function(lat, lon, image, text) {
+    	googlemaps.deleteOverlays();
     	
     	var center = new google.maps.LatLng(lat, lon);
 	    var marker = new google.maps.Marker({
@@ -112,6 +124,16 @@ var googlemaps = {
     	    icon: image,
     	    title: text,
     	});
+	    googlemaps.markersArray.push(marker);
+	    default_map.panTo(marker.getPosition());
+	    var infowindow = new google.maps.InfoWindow({
+	    	content: 'Szerokość: ' + lat + '<br>' + 'Długość: ' + lon,
+	    });	
+	    google.maps.event.addListener(marker, 'click', (function(marker, text) {
+	        return function() {
+	        	infowindow.open(default_map, marker);
+	        }
+	      })(marker));
     },
     
     chooseIcon : function() {
@@ -129,6 +151,42 @@ var googlemaps = {
     	case 'Anulowane':
     		var icon = '/static/img/cancel_marker.png'; 
     		return icon;
+    	default:
+    		var icon = '/static/img/me.png'; 
+			return icon;
+    	}
+    },
+    
+    drawPath : function(array) {
+    	googlemaps.deleteOverlays();
+    	if(array.length > 0) {
+	    	googlemaps.initMap(array[0]['lat'], array[0]['lon']);
+	    	var img = googlemaps.chooseIcon();
+	    	var polylinePoints =[];
+	    	for (elem in array){
+	    		marker = new google.maps.Marker({
+	    	        position: new google.maps.LatLng(parseFloat(array[elem].lat),  parseFloat(array[elem].lon)),
+	    	        icon: img,
+	    	        map: default_map,
+	    	        title: array[elem].timestamp,
+	    	      });
+	    		googlemaps.markersArray.push(marker);
+	    		polylinePoints.push(marker.getPosition());
+	    		var text = 'Szerokość: ' + array[elem].lat + '<br>' + 'Długość: ' + array[elem].lon + '<br>' + 'Czas: ' + array[elem].timestamp;
+	    		var infowindow = new google.maps.InfoWindow({});	
+	    		google.maps.event.addListener(marker, 'click', function () {
+	    			infowindow.setContent(text);
+	    			infowindow.open(default_map, this);
+	    		});
+	    		
+	    	}
+	    	var Polyline_Path = new google.maps.Polyline({
+	    		path: polylinePoints,
+	    		strokeColor: "#4b8df9",
+	    		strokeOpacity: 0.8,
+	    		strokeWeight: 2
+	    		});
+	    		Polyline_Path.setMap(default_map);
     	}
     },
 };
@@ -167,7 +225,7 @@ var ajax = {
                  dataType: "json",
 		         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));
                     if (xhr && xhr.overrideMimeType) {
-                        xhr.overrideMimeType("application/j-son;charset=UTF-8");
+                        xhr.overrideMimeType("application/json;charset=UTF-8");
                     }
                  },
 		         success : function(return_data)
@@ -184,6 +242,39 @@ var ajax = {
                     500: ajax.notifyOf500
                  }
 			});
+    },
+    
+    loadPath: function(from, to, onSuccess) {
+    	var time = {
+    			from : from,
+    			to : to,
+    	}
+    	var id = window.location.pathname.split( '/' );
+        id = id[id.length-2];
+    	$.ajax({ type: "POST",   
+	         url: "/load_path/"+id+"/",
+	         async: true,
+	         data: time,
+            dataType: "json",
+	         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));
+               if (xhr && xhr.overrideMimeType) {
+                   xhr.overrideMimeType("application/json;charset=UTF-8");
+               }
+            },
+	         success : function(return_data)
+	         {
+	        	 onSuccess(return_data);		  
+	         },
+            statusCode: {
+               400: function() {
+                   alert("niepoprawne wartości czasu!\n Nie zapisano zmian!");
+               },
+               404: function() {
+                   alert("takie zadanie nie istnieje. \nNie zapisano zmian!");
+               },
+               500: ajax.notifyOf500
+            }
+		});
     }
 };
 
@@ -203,7 +294,9 @@ $(document).ready(function () {
 	    var txt = $(this).text();
 	    $("#inputname").val(txt);
 	});
-
+	
+	if($('.dateinputon').length>0)
+		$('.dateinputon').datepicker($.datepicker.regional['pl']);
 	
 	if($(this).val() === "0")
 		$(".dateinput").removeAttr('disabled');
@@ -264,13 +357,19 @@ $(document).ready(function () {
 	    }, 250);
 	});
 
-	
-	var lat = $('#inputlat').val();
-	var lon = $('#inputlon').val();
+	if($('.dateinputon').length>0){
+		var lat = $('#inputlat').html();
+		var lon = $('#inputlon').html();
+	}
+	else {
+		var lat = $('#inputlat').val();
+		var lon = $('#inputlon').val();
+	}
+		
 	var name = $('#inputname').val();
+	
     googlemaps.initMap(lat, lon);
-    googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
-    
+    googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');
   });
@@ -287,7 +386,7 @@ $(document).ready(function () {
 		lon = $('#inputlon').val();
 		name = $('#inputname').val();
 		googlemaps.initMap(lat, lon);
-		googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
+		googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
 	    ajax.saveTask(ajax.notifyOfSuccess);
 	}
 	else
@@ -299,8 +398,28 @@ $(document).ready(function () {
   	  var lon = $('#inputlon').val();
   	  name = $('#inputname').val();
 	  googlemaps.initMap(lat, lon);
-	  googlemaps.addMarker(lat, lon, googlemaps.chooseIcon(), name);
+	  googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
   });
   
+  
+  
+  $('#location').click(function() {
+	  googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
+	  $(this).addClass('btn-success');
+	  $('#show_path').addClass('disabled');
+	  $('#path').removeClass('btn-success');
+	  $('.dateinputon').attr('disabled', 'disabled');
+  });
+  
+  $('#path').click(function() {
+	  $(this).addClass('btn-success');
+	  $('#location').removeClass('btn-success');
+	  $('#show_path').removeClass('disabled');
+	  $('.dateinputon').removeAttr('disabled');
+  });
+  
+  $('#show_path').click(function() {
+	  ajax.loadPath($('#datefrom').val(), $('#dateto').val(), googlemaps.drawPath);
+  });
 
 });

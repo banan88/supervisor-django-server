@@ -41,14 +41,16 @@
 					<th>Przydzielone dla</th>
 					<th>Stan</th>
 					<th>Ostatnia modyfikacja</th>
+					<th>Nadzorca</th>
 				</tr></thead>
 			<tbody>
            		{% for task in tasks %}				
            			<tr>
-					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.name}}</a></td>
-					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.supervisor}}</a></td>
-					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.state}}</a></td>
-					<td><a href="/tasks/{{task.pk}}"><i class="icon-search"></i>{{task.last_modified}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task.name}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task.fieldUser}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task.state}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task.last_modified}}</a></td>
+					<td><a href="/tasks/{{task.pk}}">{{task.supervisor}}</a></td>
 				</tr>
            		{% endfor %}
 			</tbody>
