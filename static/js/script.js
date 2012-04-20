@@ -87,7 +87,17 @@ var googlemaps = {
 	default_map : null,
 	
 	markersArray : [],
+
+	polylinesArray: [],
+
+	infowindow : new google.maps.InfoWindow(),
 	
+	clearPolilines: function() {
+		for(i in googlemaps.polylinesArray){
+			googlemaps.polylinesArray[i].setMap(null);		
+		}
+	},
+
 	deleteOverlays : function() {
 		if (googlemaps.markersArray) {
 			for (i in googlemaps.markersArray) {
@@ -115,7 +125,6 @@ var googlemaps = {
     },
     
     showLocation : function(lat, lon, image, text) {
-    	googlemaps.deleteOverlays();
     	
     	var center = new google.maps.LatLng(lat, lon);
 	    var marker = new google.maps.Marker({
@@ -126,12 +135,11 @@ var googlemaps = {
     	});
 	    googlemaps.markersArray.push(marker);
 	    default_map.panTo(marker.getPosition());
-	    var infowindow = new google.maps.InfoWindow({
-	    	content: 'Szerokość: ' + lat + '<br>' + 'Długość: ' + lon,
-	    });	
+	    	
 	    google.maps.event.addListener(marker, 'click', (function(marker, text) {
 	        return function() {
-	        	infowindow.open(default_map, marker);
+			googlemaps.infowindow.setContent('Szerokość: ' + lat + '<br>Długość:' + lon);
+	        	googlemaps.infowindow.open(default_map, marker);
 	        }
 	      })(marker));
     },
@@ -158,13 +166,14 @@ var googlemaps = {
     },
     
     drawPath : function(array) {
+	googlemaps.clearPolilines();
     	googlemaps.deleteOverlays();
     	if(array.length > 0) {
 	    	googlemaps.initMap(array[0]['lat'], array[0]['lon']);
 	    	var img = googlemaps.chooseIcon();
 	    	var polylinePoints =[];
-	    	for (elem in array){
-	    		marker = new google.maps.Marker({
+		for (elem in array){
+	    		var marker = new google.maps.Marker({
 	    	        position: new google.maps.LatLng(parseFloat(array[elem].lat),  parseFloat(array[elem].lon)),
 	    	        icon: img,
 	    	        map: default_map,
@@ -172,13 +181,12 @@ var googlemaps = {
 	    	      });
 	    		googlemaps.markersArray.push(marker);
 	    		polylinePoints.push(marker.getPosition());
-	    		var text = 'Szerokość: ' + array[elem].lat + '<br>' + 'Długość: ' + array[elem].lon + '<br>' + 'Czas: ' + array[elem].timestamp;
-	    		var infowindow = new google.maps.InfoWindow({});	
-	    		google.maps.event.addListener(marker, 'click', function () {
-	    			infowindow.setContent(text);
-	    			infowindow.open(default_map, this);
-	    		});
 	    		
+	    		google.maps.event.addListener(googlemaps.markersArray[elem], 'click', function() {
+			       
+			       googlemaps.infowindow.setContent('Szerokość: ' + array[elem].lat + '<br>' + 'Długość: ' + array[elem].lon + '<br>' + 'Czas: ' + array[elem].timestamp);
+			       googlemaps.infowindow.open(default_map, this);
+			});
 	    	}
 	    	var Polyline_Path = new google.maps.Polyline({
 	    		path: polylinePoints,
@@ -187,6 +195,7 @@ var googlemaps = {
 	    		strokeWeight: 2
 	    		});
 	    		Polyline_Path.setMap(default_map);
+		googlemaps.polylinesArray.push(Polyline_Path);
     	}
     },
 };
@@ -369,6 +378,8 @@ $(document).ready(function () {
 	var name = $('#inputname').val();
 	
     googlemaps.initMap(lat, lon);
+    googlemaps.clearPolilines();
+    googlemaps.deleteOverlays();
     googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');
@@ -386,6 +397,8 @@ $(document).ready(function () {
 		lon = $('#inputlon').val();
 		name = $('#inputname').val();
 		googlemaps.initMap(lat, lon);
+    		googlemaps.clearPolilines();		
+		googlemaps.deleteOverlays();
 		googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
 	    ajax.saveTask(ajax.notifyOfSuccess);
 	}
@@ -398,12 +411,16 @@ $(document).ready(function () {
   	  var lon = $('#inputlon').val();
   	  name = $('#inputname').val();
 	  googlemaps.initMap(lat, lon);
+	  googlemaps.clearPolilines();
+	  googlemaps.deleteOverlays();
 	  googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
   });
   
   
   
   $('#location').click(function() {
+	  googlemaps.clearPolilines();
+	  googlemaps.deleteOverlays();
 	  googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
 	  $(this).addClass('btn-success');
 	  $('#show_path').addClass('disabled');
