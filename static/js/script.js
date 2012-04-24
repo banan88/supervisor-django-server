@@ -164,6 +164,7 @@ var googlemaps = {
 			return icon;
     	}
     },
+   
     
     drawPath : function(array) {
 	googlemaps.clearPolilines();
@@ -377,10 +378,12 @@ $(document).ready(function () {
 		
 	var name = $('#inputname').val();
 	
-    googlemaps.initMap(lat, lon);
-    googlemaps.clearPolilines();
-    googlemaps.deleteOverlays();
-    googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
+	if($('#map').length >0) {
+	    googlemaps.initMap(lat, lon);
+	    googlemaps.clearPolilines();
+	    googlemaps.deleteOverlays();
+	    googlemaps.showLocation(lat, lon, googlemaps.chooseIcon(), name);
+	}
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');
   });

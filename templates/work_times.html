@@ -1,0 +1,61 @@
+{% extends "user_main.html" %}
+
+{% block title %} Supervisor: zadania {% endblock %}
+
+{% block user_main_content %}
+           <p class="centered_description">Kalendarz czasu pracy dla <a href="/field_user/{{field_user.pk}}">{{field_user.username}}</a></p><br>
+           <div class="well">
+           		<table class="table table-bordered table-condensed">
+				<thead><tr>
+					<th>Data</th>
+					<th>Czas rozpoczęcia</th>
+					<th>Czas zakończenia</th>
+					<th>Suma (hh:mm:ss)</th>
+				</tr></thead>
+			<tbody>
+           		{% for elem in worktimes %}				
+           			<tr>
+					<td>{{elem.day}}</td>
+					<td>{{elem.start}}</td>
+					<td>{{elem.finish}}</td>
+					<td>{{elem.sum}}</td>
+				</tr>
+           		{% endfor %}
+			</tbody>
+           		</table>
+           </div>
+           <div class="pagination centered_description">
+			    <ul>
+			    
+				{% if page.has_previous %} 
+				<li >
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-left"></i></a>
+				</li>
+			        {% endif %}			
+				<li>
+				<a>
+				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				</a>
+				</li>
+				{% if page.has_next %} 
+				<li >
+				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				</li>
+				{% else %}
+				<li class="disabled">
+				    <a href="#"><i class="icon-arrow-right"></i></a>
+				</li>
+			        {% endif %}
+			</div>
+{% endblock %}
+
+
+{% block bonus_script %}
+	<link rel="stylesheet" href="http://jquery-ui.googlecode.com/svn/tags/1.8.18/themes/cupertino/jquery.ui.all.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
+	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-pl.js"></script>
+{% endblock %}

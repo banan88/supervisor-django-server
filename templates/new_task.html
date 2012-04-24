@@ -1,0 +1,14 @@
+{% extends 'user_main.html' %}
+
+{% block user_main_content %}
+	<div class="well centered_description">
+             <form action="" method="post" class="form-horizontal">
+				  {% csrf_token %}
+				    {{ tf.as_p }}
+			<p><a id="save_task" class="btn btn-success" type="submit">
+                	<i class="icon-ok"></i>
+                    Zatwierdź
+                </a></p>
+			</form>
+	</div>
+{% endblock %} 

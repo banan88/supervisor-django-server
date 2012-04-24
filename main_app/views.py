@@ -8,6 +8,7 @@ from django.template import Context, Template
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
@@ -25,10 +26,14 @@ def timeContext(request):
 
 def isSupervisor(request): #check if user is not a fieldUser -> if he is, no access to web interface is granted
     test = False
+    print request
     try:
+        print 1
         user = FieldUserProfile.objects.get(user = request.user)
     except FieldUserProfile.DoesNotExist:
+        print 2
         test = True
+    print test
     return test
 
 
@@ -301,6 +306,14 @@ def saveTask(request, task_id):
         if state != task.state:
             task.state = state
             tag += "użytkownik \"%s\" zmienił stan zadania na \"%s\"." % (request.user, DESCRIPTIONS[str(state)])
+        try:
+            print 'xxxx'
+            user = User.objects.get(username = t_user)
+            print 2
+            FieldUserProfile.objects.get(user = user)
+            print 3
+        except User.DoesNotExist, FieldUserProfile.DoesNotExist:
+            return HttpResponse(status = 400)
         task.save()
         print "ok"
         print "tag:" + tag
@@ -356,4 +369,47 @@ def loadPath(request, id):
         print json
         return HttpResponse(json, mimetype='application/json')
 
-        
+
+@login_required(login_url='/login/')
+def workTime(request, id):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    try:
+        field_user = User.objects.get(pk = id)
+    except User.DoesNotExist:
+        return HttpResponse(status = 404)
+    worktimes_base = WorkDay.objects.filter(fieldUser = field_user).order_by('-day')
+    worktimes = list()
+    for e in worktimes_base:
+        sum = e.finish-e.start
+        print sum
+        e = {'day':e.day, 'start': e.start.time, 'finish': e.finish.time, 'sum':str(sum)}
+        worktimes.append(e)
+    paginator = Paginator(worktimes, 10)
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except Exception, e:
+        page = paginator.page(1)
+    return render_to_response('work_times.html', {
+        'worktimes': worktimes,
+        'field_user':field_user,
+        'page':page},
+        context_instance = RequestContext(request))
+
+
+@login_required(login_url='/login/')
+def newTask(request):
+    if not isSupervisor(request):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    if request.method == 'POST':
+        tf = TaskForm(request.POST)
+        if(tf.is_valid()):
+            task = tf.save()
+        return HttpResponse('ok')
+    else:
+        tf = TaskForm()
+        return render_to_response('new_task.html', {
+        'tf':tf},
+        context_instance = RequestContext(request))

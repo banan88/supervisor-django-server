@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.forms import ModelForm, Textarea
 import datetime
 
 #profil pracownika terenowego powiazany z obiektem usera (nadzorca ma jest po prostu userem, bez profilu)
@@ -16,20 +17,20 @@ class FieldUserProfile(models.Model):
     sync_time = models.DateTimeField(blank = True, null = True)
 
 STATES = (
-        ('3', 'done'),
-        ('2', 'current'),
-        ('1', 'pending'),
-        ('0', 'cancelled'),
+        ('3', 'Wykonane'),
+        ('2', 'Aktywne'),
+        ('1', 'Oczekujące'),
+        ('0', 'Anulowane'),
         )
 
 
 class Task(models.Model):
-    fieldUser = models.ForeignKey(User, related_name = 'fielduser_set') 
-    latitude = models.DecimalField(max_digits=11, decimal_places=8)
-    longitude = models.DecimalField(max_digits=11, decimal_places=8)
-    state = models.CharField(choices = STATES, max_length = 1)
-    name = models.CharField(max_length = 30)
-    description = models.TextField()
+    fieldUser = models.ForeignKey(User, related_name = 'fielduser_set', verbose_name='użytkownik terenowy')
+    latitude = models.DecimalField(max_digits=11, decimal_places=8, verbose_name="szerokość geograficzna")
+    longitude = models.DecimalField(max_digits=11, decimal_places=8, verbose_name="długość geograficzna")
+    state = models.CharField(choices = STATES, max_length = 1, verbose_name="stan")
+    name = models.CharField(max_length = 30, verbose_name="nazwa")
+    description = models.TextField(verbose_name="opis")
     creation_time = models.DateTimeField(auto_now_add = True)
     last_modified = models.DateTimeField(auto_now = True)
     finish_time = models.DateTimeField(blank = True, null = True)
@@ -82,3 +83,14 @@ class UserLocation(models.Model):
     latitude = models.DecimalField(max_digits=11, decimal_places=8)
     longitude = models.DecimalField(max_digits=11, decimal_places=8)
     timestamp = models.DateTimeField()
+
+
+######## FORMS ########
+
+class TaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ['fieldUser', 'latitude', 'longitude', 'name', 'description']
+        widgets = {
+            'description': Textarea(attrs={'cols': 220, 'rows': 20}),
+        }

@@ -47,10 +47,10 @@
            		{% for task in tasks %}				
            			<tr>
 					<td><a href="/tasks/{{task.pk}}">{{task.name}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task.fieldUser}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task.state}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task.last_modified}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task.supervisor}}</a></td>
+					<td><a href="/field_user/{{task.fieldUser.pk}}">{{task.fieldUser}}</a></td>
+					<td>{{task.state}}</td>
+					<td>{{task.last_modified}}</td>
+					<td>{{task.supervisor}}</td>
 				</tr>
            		{% endfor %}
 			</tbody>

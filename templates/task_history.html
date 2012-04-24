@@ -17,18 +17,18 @@
 			<tbody>
            		{% for task_history in tasks_history %}				
            			<tr>
-					<td><a href="/tasks/{{task.pk}}">{{task_history.state_changed_to}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">
+					<td>{{task_history.state_changed_to}}</td>
+					<td>
 					{% if task_history.content_edited %}
 						Tak
 					{% else %}
 						Nie
 					{% endif %}
-					</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task_history.user_editor}}</a></td>
-					<td><a href="/tasks/{{task.pk}}">{{task_history.change_time}}</a></td>
+					</td>
+					<td>{{task_history.user_editor}}</td>
+					<td>{{task_history.change_time}}</td>
 					<td>{% if task_history.change_latitude %}
-						<a href="/tasks/{{task.pk}}">{{task_history.change_latitude}}</a>
+						{{task_history.change_latitude}}
 						{%else%}siedziba firmy{%endif%}</td>
 					<td>{% if task_history.change_longitude %}
 						<a href="/tasks/{{task.pk}}">{{task_history.change_longitude}}</a>

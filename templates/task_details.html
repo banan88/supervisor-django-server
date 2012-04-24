@@ -11,7 +11,7 @@
                   <label class="control-label" for="inputuser">Użytkownik</label> 
                   <div class="controls">
                     <input type="text" class="input-xlarge disabled" id="inputuser" value="{{task.fieldUser}}" disabled="">
-                    <a class ="btn" id="user_profile"><i class="icon-user"></i> Pokaż profil</a>
+                    <a class ="btn" id="user_profile" href="/field_user/{{task.fieldUser.pk}}/"><i class="icon-user"></i> Pokaż profil</a>
                   </div>
                    <br> 
                    <label class="control-label" for="inputsuper">Nadzorca</label> 

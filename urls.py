@@ -23,6 +23,8 @@ urlpatterns = patterns('',
     url(r'^search/$', 'main_app.views.search'),
     url(r'^field_user/(?P<id>\d+)/$', 'main_app.views.fieldUser'),
     url(r'^load_path/(?P<id>\d+)/$', 'main_app.views.loadPath'),
+    url(r'^work_time/(?P<id>\d+)/$', 'main_app.views.workTime'),
+    url(r'^new_task/$', 'main_app.views.newTask'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),
