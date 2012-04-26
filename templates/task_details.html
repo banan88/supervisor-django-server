@@ -1,5 +1,5 @@
 {% extends 'user_main.html' %}
-
+	{% block minor_title %}Szczegóły zadania{% endblock %}
 {% block user_main_content %}
              <form id="task-form" class="form-horizontal">
               <fieldset>
@@ -11,6 +11,7 @@
                   <label class="control-label" for="inputuser">Użytkownik</label> 
                   <div class="controls">
                     <input type="text" class="input-xlarge disabled" id="inputuser" value="{{task.fieldUser}}" disabled="">
+                    <div id="usersuggest" class="suggest2"></div>
                     <a class ="btn" id="user_profile" href="/field_user/{{task.fieldUser.pk}}/"><i class="icon-user"></i> Pokaż profil</a>
                   </div>
                    <br> 

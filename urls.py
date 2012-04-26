@@ -22,9 +22,11 @@ urlpatterns = patterns('',
     url(r'^getnamesuggestions/$', 'main_app.views.getNameSuggestions'),
     url(r'^search/$', 'main_app.views.search'),
     url(r'^field_user/(?P<id>\d+)/$', 'main_app.views.fieldUser'),
+    url(r'^field_user/$', 'main_app.views.fieldUsers'),
     url(r'^load_path/(?P<id>\d+)/$', 'main_app.views.loadPath'),
     url(r'^work_time/(?P<id>\d+)/$', 'main_app.views.workTime'),
     url(r'^new_task/$', 'main_app.views.newTask'),
+    url(r'^search_user/$', 'main_app.views.searchUser'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),

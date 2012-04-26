@@ -1,14 +1,16 @@
 {% extends "user_main.html" %}
 
 {% block title %} Supervisor: zadania {% endblock %}
-
+		{% block minor_title %}Lista zadań{% endblock %}
 {% block user_main_content %}
+
+		{% load custom_filters %}
 			<p class="centered_description">Filtruj zadania</p><br>
            <form class="well" method="get" action="/search/">
                     <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania" name="name"/>
-                    <div id="namesuggest" class="suggest"></div>
+                    <div id="namesuggest" class="suggest2"></div>
                     <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący" name="user"/>
-                    <div id="usersuggest" class="suggest"></div>
+                    <div id="usersuggest" class="suggest""></div>
                     <input type="text" class="input-medium search-query" id="inputsuper" placeholder="Nadzorca zadania" name="super"/>
                     <div id="supersuggest" class="suggest"></div> <br> <br>
                     <select id="selectstate" class="input" name="state">
@@ -32,7 +34,7 @@
 		 	 <i class="icon-search"></i> Szukaj
 		 </button>       
            </form>
-           <p class="centered_description">Lista zadań</p><br>
+           <p class="centered_description">Lista zadań ({{tasks|length}})</p><br>
            <div class="well">
            		
            		<table class="table table-bordered table-condensed">
@@ -48,7 +50,7 @@
            			<tr>
 					<td><a href="/tasks/{{task.pk}}">{{task.name}}</a></td>
 					<td><a href="/field_user/{{task.fieldUser.pk}}">{{task.fieldUser}}</a></td>
-					<td>{{task.state}}</td>
+					<td>{{task.state|state_string}}</td>
 					<td>{{task.last_modified}}</td>
 					<td>{{task.supervisor}}</td>
 				</tr>

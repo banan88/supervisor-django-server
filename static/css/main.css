@@ -184,8 +184,16 @@ div#map{
 		width:170px;
 		position: fixed;
 		padding: 5px;
-		margin: 0px 185px;
+		
 		text-align:center;
+}
+
+.suggest {
+	margin: 0px 185px;
+}
+
+.suggest2{
+	margin: 0px 5px;
 }
 
 #namesuggest{
@@ -198,6 +206,7 @@ div#map{
 		padding: 5px;
 		text-align:center;
 }
+
 
 #supersuggest{
 		display:none;
@@ -212,3 +221,7 @@ div#map{
 }
 
 
+#id_description {
+	width: 270px;
+	height: 80px;
+}

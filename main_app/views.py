@@ -24,16 +24,12 @@ def timeContext(request):
     return {'current_time': datetime.datetime.time(datetime.datetime.now())}
 
 
-def isSupervisor(request): #check if user is not a fieldUser -> if he is, no access to web interface is granted
-    test = False
-    print request
+def isSupervisor(user): #check if user is not a fieldUser -> if he is, no access to web interface is granted
+    print user.username
     try:
-        print 1
-        user = FieldUserProfile.objects.get(user = request.user)
+        user = FieldUserProfile.objects.get(user = user)
     except FieldUserProfile.DoesNotExist:
-        print 2
         test = True
-    print test
     return test
 
 
@@ -45,7 +41,7 @@ def index(request):
 
 @login_required(login_url='/login/')
 def userMain(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     user = request.user
     tasks_created = Task.objects.filter(supervisor__pk = request.user.pk) #all created
@@ -80,7 +76,7 @@ def userMain(request):
 
 @login_required(login_url='/login/')
 def taskDetails(request, task_id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     try:
         task = Task.objects.get(pk = task_id)
@@ -93,7 +89,7 @@ def taskDetails(request, task_id):
 
 @login_required(login_url='/login/')
 def tasks(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     tasks = Task.objects.all().order_by('-last_modified')
     paginator = Paginator(tasks, 10)
@@ -101,7 +97,7 @@ def tasks(request):
         page = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
-    except Exception, e:
+    except (Exception, e):
         page = paginator.page(1)
             
     return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
@@ -109,7 +105,7 @@ def tasks(request):
 
 @login_required(login_url='/login/')
 def taskHistory(request, task_id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     try:
         task = Task.objects.get(pk = task_id)
@@ -122,14 +118,14 @@ def taskHistory(request, task_id):
         page = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
-    except Exception, e:
+    except (Exception, e):
         page = paginator.page(1)
     return render_to_response('task_history.html', {'task':task, 'tasks_history':tasks_history, 'page':page}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
 def getUserSuggestions(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
@@ -138,8 +134,8 @@ def getUserSuggestions(request):
             print 1
             try:
                 profiles_queryset = profiles.filter(user__username__startswith=q)[:4]
-            except IndexError, User.DoesNotExist:
-                pass
+            except (IndexError, User.DoesNotExist):
+                print 'error'
             print 2
             suggestions = []
             for u in profiles_queryset:
@@ -152,7 +148,7 @@ def getUserSuggestions(request):
 
 @login_required(login_url='/login/')
 def getSuperSuggestions(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
@@ -160,7 +156,7 @@ def getSuperSuggestions(request):
             supers = User.objects.exclude(id__in = FieldUserProfile.objects.all().values_list('user__id', flat=True))
             try:
                 supers = supers.filter(username__startswith=q)[:4]
-            except IndexError, User.DoesNotExist:
+            except (IndexError, User.DoesNotExist):
                 pass
             print 2
             suggestions = []
@@ -174,7 +170,7 @@ def getSuperSuggestions(request):
 
 @login_required(login_url='/login/')
 def getNameSuggestions(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse(status = 403)
     if request.is_ajax():
         if request.method == 'POST':
@@ -195,7 +191,7 @@ def getNameSuggestions(request):
 
 @login_required(login_url='/login/')
 def search(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     if request.method == 'GET':
         query = request.GET
@@ -266,14 +262,14 @@ def search(request):
             page = paginator.page(request.GET.get('page', 1))
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
-        except Exception, e:
+        except Exception:
             page = paginator.page(1)
         return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
 def saveTask(request, task_id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
         try:
@@ -311,8 +307,9 @@ def saveTask(request, task_id):
             user = User.objects.get(username = t_user)
             print 2
             FieldUserProfile.objects.get(user = user)
+            task.fieldUser = user
             print 3
-        except User.DoesNotExist, FieldUserProfile.DoesNotExist:
+        except (User.DoesNotExist, FieldUserProfile.DoesNotExist):
             return HttpResponse(status = 400)
         task.save()
         print "ok"
@@ -329,7 +326,7 @@ def saveTask(request, task_id):
 
 @login_required(login_url='/login/')
 def fieldUser(request, id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     try:
         fielduser = FieldUserProfile.objects.get(user__pk = id)
@@ -340,8 +337,23 @@ def fieldUser(request, id):
 
 
 @login_required(login_url='/login/')
+def fieldUsers(request):
+    if not isSupervisor(request.user):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    fieldusers = FieldUserProfile.objects.all()
+    paginator = Paginator(fieldusers, 10)
+    try:
+        page = paginator.page(request.GET.get('page', 1))
+    except EmptyPage:
+        page = paginator.page(paginator.num_pages)
+    except (Exception, e):
+        page = paginator.page(1)
+    return render_to_response('fieldusers.html', {'fieldusers':fieldusers, 'page':page}, context_instance = RequestContext(request))
+
+
+@login_required(login_url='/login/')
 def loadPath(request, id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
         try:
@@ -372,7 +384,7 @@ def loadPath(request, id):
 
 @login_required(login_url='/login/')
 def workTime(request, id):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     try:
         field_user = User.objects.get(pk = id)
@@ -390,7 +402,7 @@ def workTime(request, id):
         page = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
         page = paginator.page(paginator.num_pages)
-    except Exception, e:
+    except Exception:
         page = paginator.page(1)
     return render_to_response('work_times.html', {
         'worktimes': worktimes,
@@ -401,15 +413,32 @@ def workTime(request, id):
 
 @login_required(login_url='/login/')
 def newTask(request):
-    if not isSupervisor(request):
+    if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
     if request.method == 'POST':
         tf = TaskForm(request.POST)
+        tf.instance.supervisor = request.user
+        print "state: " + tf.instance.state
         if(tf.is_valid()):
             task = tf.save()
-        return HttpResponse('ok')
+            return HttpResponseRedirect('/tasks/'+str(task.pk) + '/')
     else:
         tf = TaskForm()
-        return render_to_response('new_task.html', {
-        'tf':tf},
-        context_instance = RequestContext(request))
+        tf.fields['fieldUser'].queryset = User.objects.filter(id__in =
+            FieldUserProfile.objects.all()
+            .values_list('user__id', flat=True))
+    return render_to_response('new_task.html', {'tf':tf}, context_instance = RequestContext(request))
+
+
+@login_required(login_url='/login/')
+def searchUser(request):
+    if not isSupervisor(request.user):
+        return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
+    if request.method == 'GET':
+        query = request.GET
+        name = query.get('name', False)
+        if name:
+            fieldusers = FieldUserProfile.objects.filter(user__username__icontains = name)
+        else:
+            fieldusers = []
+    return render_to_response('searchUser.html', {'fieldusers':fieldusers}, context_instance = RequestContext(request))

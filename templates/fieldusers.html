@@ -1,24 +1,22 @@
 {% extends "user_main.html" %}
-{% block minor_title %}Czas pracy{% endblock %}
-{% block title %} Supervisor: zadania {% endblock %}
 
+{% block title %} Supervisor: zadania {% endblock %}
+		{% block minor_title %}Lista użytkowników terenowych{% endblock %}
 {% block user_main_content %}
-           <p class="centered_description">Kalendarz czasu pracy dla <a href="/field_user/{{field_user.pk}}">{{field_user.username}}</a></p><br>
+
+           <p class="centered_description">Wszyscy użytkownicy: ({{fieldusers|length}})</p><br>
            <div class="well">
+           		
            		<table class="table table-bordered table-condensed">
 				<thead><tr>
-					<th>Data</th>
-					<th>Czas rozpoczęcia</th>
-					<th>Czas zakończenia</th>
-					<th>Suma (hh:mm:ss)</th>
+					<th>Nazwa użytkownika</th>
+					<th>Profil</th>
 				</tr></thead>
 			<tbody>
-           		{% for elem in worktimes %}				
-           			<tr>
-					<td>{{elem.day}}</td>
-					<td>{{elem.start}}</td>
-					<td>{{elem.finish}}</td>
-					<td>{{elem.sum}}</td>
+           		{% for fu in fieldusers %}				
+           			<tr class="trow">
+					<td><a href="/field_user/{{fu.user.pk}}/">{{fu.user.username}}</a></td>
+					<td><a href="/field_user/{{fu.user.pk}}/" class="btn">Wyświetl profil</a></td>
 				</tr>
            		{% endfor %}
 			</tbody>
@@ -56,6 +54,5 @@
 
 {% block bonus_script %}
 	<link rel="stylesheet" href="http://jquery-ui.googlecode.com/svn/tags/1.8.18/themes/cupertino/jquery.ui.all.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script> 
 	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-pl.js"></script>
 {% endblock %}

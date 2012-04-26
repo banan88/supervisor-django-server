@@ -15,7 +15,7 @@
           </ul>
         </nav>
         <div class="span8 content">
-          <div class="alert alert-info"><p>Podgląd</p></div>
+          <div class="alert alert-info"><p>{% block minor_title %}Twój profil{% endblock %}</p></div>
               
                {% block user_main_content %}
                <div class="centered_description">Nadzorowane przez Ciebie zadania:<br><br></div>
@@ -28,11 +28,11 @@
                			</thead>
                			<tbody>
 		               		<tr>
-		               		<td>Obecnie wykonywane:</td><td>{{tasks_current}}<img src="{{STATIC_URL}}img/current.png"/>
+		               		<td>Aktywne:</td><td>{{tasks_current}}<img src="{{STATIC_URL}}img/current.png"/>
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=2&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
-		               		<td>Oczekują na rozpoczęcie:</td><td>{{tasks_pending}}<img src="{{STATIC_URL}}img/clock.png"/>
+		               		<td>Oczekujące:</td><td>{{tasks_pending}}<img src="{{STATIC_URL}}img/clock.png"/>
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=1&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>

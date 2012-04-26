@@ -84,13 +84,10 @@ class UserLocation(models.Model):
     longitude = models.DecimalField(max_digits=11, decimal_places=8)
     timestamp = models.DateTimeField()
 
-
-######## FORMS ########
+#### FORMS ####
 
 class TaskForm(ModelForm):
     class Meta:
         model = Task
-        fields = ['fieldUser', 'latitude', 'longitude', 'name', 'description']
-        widgets = {
-            'description': Textarea(attrs={'cols': 220, 'rows': 20}),
-        }
+        fields = ['name','fieldUser', 'state', 'description', 'latitude', 'longitude']
+  

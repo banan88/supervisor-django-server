@@ -1,7 +1,7 @@
 {% extends "user_main.html" %}
 
 {% block title %} Supervisor: historia dla {{task.name}} {% endblock %}
-
+	{% block minor_title %}Historia zmian zadania{% endblock %}
 {% block user_main_content %}
 	<div class="centered_description">Historia zmian dla <a href="/tasks/{{task.pk}}">{{task.name}}</a>:<br><br></div>
            <div style="padding: 10px;]">			

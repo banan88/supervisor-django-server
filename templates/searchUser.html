@@ -1,0 +1,37 @@
+{% extends "user_main.html" %}
+
+{% block title %} Supervisor: zadania {% endblock %}
+		{% block minor_title %}Szukaj użytkownika{% endblock %}
+{% block user_main_content %}
+			
+			<p class="centered_description">Użytkownicy</p><br>
+           <form class="well" method="get" action="/search_user/">
+                    <input type="text" class="input-medium search-query" id="searchuser" placeholder="Nazwa użytkownika" name="name"/>
+                    <input id="save_task" class="btn" type="submit" value="Szukaj"/>
+           </form>
+           
+           <p class="centered_description">Wyszukani użytkownicy: ({{fieldusers|length}})</p><br>
+           <div class="well">
+           		
+           		<table class="table table-bordered table-condensed">
+				<thead><tr>
+					<th>Nazwa użytkownika</th>
+					<th>Profil</th>
+				</tr></thead>
+			<tbody>
+           		{% for fu in fieldusers %}				
+           			<tr class="trow">
+					<td><a href="/field_user/{{fu.user.pk}}/">{{fu.user.username}}</a></td>
+					<td><a href="/field_user/{{fu.user.pk}}/" class="btn">Wyświetl profil</a></td>
+				</tr>
+           		{% endfor %}
+			</tbody>
+           		</table>
+           </div>
+{% endblock %}
+
+
+{% block bonus_script %}
+	<link rel="stylesheet" href="http://jquery-ui.googlecode.com/svn/tags/1.8.18/themes/cupertino/jquery.ui.all.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="http://jquery-ui.googlecode.com/svn/trunk/ui/i18n/jquery.ui.datepicker-pl.js"></script>
+{% endblock %}
