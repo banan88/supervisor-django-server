@@ -4,7 +4,7 @@
 		{% block minor_title %}Lista użytkowników terenowych{% endblock %}
 {% block user_main_content %}
 
-           <p class="centered_description">Wszyscy użytkownicy: ({{fieldusers|length}})</p><br>
+           <p class="centered_description">Wszyscy użytkownicy: ({{size}})</p><br>
            <div class="well">
            		
            		<table class="table table-bordered table-condensed">
@@ -13,7 +13,7 @@
 					<th>Profil</th>
 				</tr></thead>
 			<tbody>
-           		{% for fu in fieldusers %}				
+           		{% for fu in fieldusers.object_list %}				
            			<tr class="trow">
 					<td><a href="/field_user/{{fu.user.pk}}/">{{fu.user.username}}</a></td>
 					<td><a href="/field_user/{{fu.user.pk}}/" class="btn">Wyświetl profil</a></td>
@@ -25,9 +25,9 @@
            <div class="pagination centered_description">
 			    <ul>
 			    
-				{% if page.has_previous %} 
+				{% if fieldusers.has_previous %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="?page={{ fieldusers.previous_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
@@ -36,12 +36,12 @@
 			        {% endif %}			
 				<li>
 				<a>
-				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				    Strona {{ fieldusers.number }} z {{ fieldusers.paginator.num_pages }}.
 				</a>
 				</li>
-				{% if page.has_next %} 
+				{% if fieldusers.has_next %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				    <a href="?page={{ fieldusers.next_page_number }}"><i class="icon-arrow-right"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">

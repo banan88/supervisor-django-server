@@ -225,3 +225,7 @@ div#map{
 	width: 270px;
 	height: 80px;
 }
+
+.table th, .table td { /* override default twitter bootstrap left align */
+    text-align: center;
+}

@@ -7,34 +7,34 @@
 		{% load custom_filters %}
 			<p class="centered_description">Filtruj zadania</p><br>
            <form class="well" method="get" action="/search/">
-                    <input type="text" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania" name="name"/>
+                    <input type="text" value="{{request.GET.name}}" class="input-medium search-query" id="inputname" placeholder="Nazwa zadania" name="name"/>
                     <div id="namesuggest" class="suggest2"></div>
-                    <input type="text" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący" name="user"/>
+                    <input type="text" value="{{request.GET.user}}" class="input-medium search-query" id="inputuser" placeholder="Użytkownik wykonujący" name="user"/>
                     <div id="usersuggest" class="suggest""></div>
-                    <input type="text" class="input-medium search-query" id="inputsuper" placeholder="Nadzorca zadania" name="super"/>
+                    <input type="text" value="{{request.GET.super}}" class="input-medium search-query" id="inputsuper" placeholder="Nadzorca zadania" name="super"/>
                     <div id="supersuggest" class="suggest"></div> <br> <br>
                     <select id="selectstate" class="input" name="state">
-                        <option value="4" >Dowolny stan</option>
-                        	<option value="3">Wykonane</option>
-                        	<option value="2">Aktywne</option>
-                        	<option value="1">Oczekujące</option>
-                        	<option value="0">Anulowane</option>
+                        <option {% if request.GET.state == "4" %} selected="selected" {% endif %} value="4" >Dowolny stan</option>
+                        	<option {% if request.GET.state == "3" %} selected="selected" {% endif %} value="3">Wykonane</option>
+                        	<option {% if request.GET.state == "2" %} selected="selected" {% endif %} value="2">Aktywne</option>
+                        	<option {% if request.GET.state == "1" %} selected="selected" {% endif %} value="1">Oczekujące</option>
+                        	<option {% if request.GET.state == "0" %} selected="selected" {% endif %} value="0">Anulowane</option>
                       </select> 
                       
                       <select id="selecttime" name="time">
                         <option value="4">Dowolny okres zmian</option>
-                        	<option value="3">Z dziś</option>
-                        	<option value="2">Z wczoraj</option>
-                        	<option value="1">Ostatni tydzień</option>
-                        	<option value="0">Zakres dat</option>
+                        	<option {% if request.GET.time == "3" %} selected="selected" {% endif %} value="3">Z dziś</option>
+                        	<option {% if request.GET.time == "2" %} selected="selected" {% endif %} value="2">Z wczoraj</option>
+                        	<option {% if request.GET.time == "1" %} selected="selected" {% endif %} value="1">Ostatni tydzień</option>
+                        	<option {% if request.GET.time == "0" %} selected="selected" {% endif %} value="0">Zakres dat</option>
                       </select>
-		 <input id="dateFrom" class="input-small dateinput" type="textbox" placeholder="Od" name="from"/> 
-		 <input id="dateTo" class="input-small dateinput" type="textbox" placeholder="Do" name="to"/> <br><br>
+		 <input id="dateFrom" class="input-small dateinput" value="{{request.GET.from}}" type="textbox" placeholder="Od" name="from"/> 
+		 <input id="dateTo" class="input-small dateinput" value="{{request.GET.to}}" type="textbox" placeholder="Do" name="to"/> <br><br>
 		 <button type="submit" class="btn btn-primary">
 		 	 <i class="icon-search"></i> Szukaj
 		 </button>       
            </form>
-           <p class="centered_description">Lista zadań ({{tasks|length}})</p><br>
+           <p class="centered_description">Lista zadań (łącznie {{size}} zadań)</p><br>
            <div class="well">
            		
            		<table class="table table-bordered table-condensed">
@@ -46,7 +46,7 @@
 					<th>Nadzorca</th>
 				</tr></thead>
 			<tbody>
-           		{% for task in tasks %}				
+           		{% for task in tasks.object_list %}				
            			<tr>
 					<td><a href="/tasks/{{task.pk}}">{{task.name}}</a></td>
 					<td><a href="/field_user/{{task.fieldUser.pk}}">{{task.fieldUser}}</a></td>
@@ -61,23 +61,23 @@
            <div class="pagination centered_description">
 			    <ul>
 			    
-				{% if page.has_previous %} 
+				{% if tasks.has_previous %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="{{criteria}}&page={{ tasks.previous_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
-				    <a href="#"><i class="icon-arrow-left"></i></a>
+				    <a><i class="icon-arrow-left"></i></a>
 				</li>
 			        {% endif %}			
 				<li>
 				<a>
-				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				    Strona {{ tasks.number }} z {{ tasks.paginator.num_pages }}.
 				</a>
 				</li>
-				{% if page.has_next %} 
+				{% if tasks.has_next %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				    <a href="{{criteria}}&page={{ tasks.next_page_number }}"><i class="icon-arrow-right"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">

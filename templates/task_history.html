@@ -15,7 +15,7 @@
 					<th>Szerokość</th>
 				</tr></thead>
 			<tbody>
-           		{% for task_history in tasks_history %}				
+           		{% for task_history in tasks_history.object_list %}				
            			<tr>
 					<td>{{task_history.state_changed_to}}</td>
 					<td>
@@ -46,9 +46,9 @@
            <div class="pagination centered_description">
 			    <ul>
 
-				{% if page.has_previous %} 
+				{% if tasks_history.has_previous %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="?page={{ tasks_history.next_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
@@ -57,12 +57,12 @@
 			        {% endif %}			
 				<li>
 				<a>
-				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				    Strona {{ tasks_history.number }} z {{ tasks_history.paginator.num_pages }}.
 				</a>
 				</li>
-				{% if page.has_next %} 
+				{% if tasks_history.has_next %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				    <a href="?page={{ tasks_history.next_page_number }}"><i class="icon-arrow-right"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">

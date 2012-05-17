@@ -20,37 +20,43 @@
                {% block user_main_content %}
                <div class="centered_description">Nadzorowane przez Ciebie zadania:<br><br></div>
                	<div class="well">
-               		<table class="table table-bordered table-condensed">
+               		<table  class="table table-bordered table-condensed">
                			<thead>
+               				<th>Symbol</th>
                				<th>Stan zadań</th>
                				<th>Liczba</th>
                				<th>Podgląd</th>
                			</thead>
                			<tbody>
 		               		<tr>
-		               		<td>Aktywne:</td><td>{{tasks_current}}<img src="{{STATIC_URL}}img/current.png"/>
+		               		<td><img src="{{STATIC_URL}}img/current.png"/></td>
+		               		<td>Aktywne:</td><td>{{tasks_current}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=2&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
-		               		<td>Oczekujące:</td><td>{{tasks_pending}}<img src="{{STATIC_URL}}img/clock.png"/>
+		               		<td><img src="{{STATIC_URL}}img/clock.png"/></td>
+		               		<td>Oczekujące:</td><td>{{tasks_pending}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=1&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
-		               		<td>Wykonane:</td><td>{{tasks_done}}<img src="{{STATIC_URL}}img/done.png"/>
+		               		<td><img src="{{STATIC_URL}}img/done.png"/></td>
+		               		<td>Wykonane:</td><td>{{tasks_done}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=3&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
-		               		<td>Anulowane:</td><td>{{tasks_cancelled}}<img src="{{STATIC_URL}}img/cancel.png"/>
+		               		<td><img src="{{STATIC_URL}}img/cancel.png"/></td>
+		               		<td>Anulowane:</td><td>{{tasks_cancelled}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=0&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
+		               		<td></td>
 		               		<td>Łącznie:</td><td>{{tasks_created}}</td><td>
-		               		<a class="btn" href="/search/?name=&user=&super=super&state=4&time=4">Wyświetl</a></td>
+		               		<a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=4&time=4">Wyświetl</a></td>
 		               		</tr>
                			</tbody>
                		</table>
                	</div>
-           <p class="centered_description">Użytkownicy pracujący nad Twoimi zadaniami:</p><br>
+           <p class="centered_description">Użytkownicy pracujący nad Twoimi zadaniami (łącznie {{size}} użytkowników):</p><br>
            <div class="well">
            		
            		<table class="table table-bordered table-condensed">
@@ -59,7 +65,7 @@
 					<th>Podgląd zadań</th>
 				</tr></thead>
 			<tbody>
-           		{% for user in supervised_users %}				
+           		{% for user in supervised_users.object_list %}				
            			<tr>
 					<td><a href="/field_user/{{user.pk}}">{{user.username}}</a></td>
 					<td><a class="btn" href="/search/?name=&user={{user.username}}&super={{request.user.username}}&state=4&time=4">Wyświetl</a></td>
@@ -71,9 +77,9 @@
            <div class="pagination centered_description">
 			    <ul>
 			    
-				{% if page.has_previous %} 
+				{% if supervised_users.has_previous %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="?page={{ supervised_users.previous_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">
@@ -82,12 +88,12 @@
 			        {% endif %}			
 				<li>
 				<a>
-				    Strona {{ page.number }} z {{ page.paginator.num_pages }}.
+				    Strona {{ supervised_users.number }} z {{ supervised_users.paginator.num_pages }}.
 				</a>
 				</li>
-				{% if page.has_next %} 
+				{% if supervised_users.has_next %} 
 				<li >
-				    <a href="?page={{ page.next_page_number }}"><i class="icon-arrow-right"></i></a>
+				    <a href="?page={{ supervised_users.next_page_number }}"><i class="icon-arrow-right"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">

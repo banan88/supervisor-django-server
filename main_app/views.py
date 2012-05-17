@@ -25,11 +25,12 @@ def timeContext(request):
 
 
 def isSupervisor(user): #check if user is not a fieldUser -> if he is, no access to web interface is granted
-    print user.username
     try:
         user = FieldUserProfile.objects.get(user = user)
     except FieldUserProfile.DoesNotExist:
         test = True
+    else:
+        test = False
     return test
 
 
@@ -50,19 +51,21 @@ def userMain(request):
     tasks_done = tasks_created.filter(state='3')
     tasks_cancelled = tasks_created.filter(state='0')
 
-    supervised_users = User.objects.filter(id__in =
+    supervised_users_list = User.objects.filter(id__in =
             tasks_created.filter(state__in=['2','1'])
             .order_by('-date_modified')
             .values_list('fieldUser__id', flat=True)
         )
-    paginator = Paginator(supervised_users, 10)
+    size = supervised_users_list.count
+    paginator = Paginator(supervised_users_list, 1)
     
     try:
-        page = paginator.page(request.GET.get('page', 1))
+        page = request.GET.get('page',1)
+        supervised_users = paginator.page(page)
     except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except Exception, e:
-        page = paginator.page(1)
+        supervised_users = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        supervised_users = paginator.page(1)
     return render_to_response('user_main.html', {
         'tasks_created':tasks_created.count(),
         'tasks_current':tasks_current.count(),
@@ -70,7 +73,7 @@ def userMain(request):
         'tasks_done':tasks_done.count(),
         'tasks_cancelled':tasks_cancelled.count(),
         'supervised_users':supervised_users,
-        'page':page},
+        'size':size},
         context_instance = RequestContext(request))
 
 
@@ -91,16 +94,18 @@ def taskDetails(request, task_id):
 def tasks(request):
     if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
-    tasks = Task.objects.all().order_by('-last_modified')
-    paginator = Paginator(tasks, 10)
+    tasks_list = Task.objects.all().order_by('-last_modified')
+    size = tasks_list.count
+    paginator = Paginator(tasks_list, 10)
     try:
-        page = paginator.page(request.GET.get('page', 1))
+        page = request.GET.get('page',1)
+        tasks = paginator.page(page)
     except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except (Exception, e):
-        page = paginator.page(1)
+        tasks = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        tasks = paginator.page(1)
             
-    return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
+    return render_to_response('tasks.html', {'tasks':tasks, 'size':size}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
@@ -111,16 +116,16 @@ def taskHistory(request, task_id):
         task = Task.objects.get(pk = task_id)
     except Task.DoesNotExist:
         raise Http404
-    tasks_history = TaskStateHistory.objects.filter(task__id = task.id).order_by('-change_time')
-    print tasks_history
-    paginator = Paginator(tasks_history, 10)
+    tasks_history_base = TaskStateHistory.objects.filter(task__id = task.id).order_by('-change_time')
+    print tasks_history_base.count()
+    paginator = Paginator(tasks_history_base, 1)
     try:
-        page = paginator.page(request.GET.get('page', 1))
+        tasks_history = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except (Exception, e):
-        page = paginator.page(1)
-    return render_to_response('task_history.html', {'task':task, 'tasks_history':tasks_history, 'page':page}, context_instance = RequestContext(request))
+        tasks_history = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        tasks_history = paginator.page(1)
+    return render_to_response('task_history.html', {'task':task, 'tasks_history':tasks_history}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
@@ -230,15 +235,18 @@ def search(request):
         if time:
             if time == '0':
                 t_from = query.get('from', False)
-                t_from = t_from.split('-')
-                print t_from
-                t_from = datetime.date(int(t_from[0]), int(t_from[1]), int(t_from[2]))
-                t_to = query.get('to', False)
-                t_to = t_to.split('-')
-                t_to = datetime.date(int(t_to[0]), int(t_to[1]), int(t_to[2]))
-                if t_from and t_to:
-                    tasks = tasks.filter(last_modified__gte = t_from)
-                    tasks = tasks.filter(last_modified__lte = t_to)
+                try:
+                    t_from = t_from.split('-')
+                    print t_from
+                    t_from = datetime.date(int(t_from[0]), int(t_from[1]), int(t_from[2]))
+                    t_to = query.get('to', False)
+                    t_to = t_to.split('-')
+                    t_to = datetime.date(int(t_to[0]), int(t_to[1]), int(t_to[2]))
+                    if t_from and t_to:
+                        tasks = tasks.filter(last_modified__gte = t_from)
+                        tasks = tasks.filter(last_modified__lte = t_to)
+                except Exception:
+                    raise Http404;
                 print 'post time 0:'
                 print tasks
             elif time == '1':
@@ -247,7 +255,7 @@ def search(request):
                 print 'post time 1:'
                 print tasks
             elif time == '2':
-                date_n_ago = datetime.datetime.today() - timedelta(days=1)
+                date_n_ago = datetime.datetime.today() - datetime.timedelta(days=1)
                 tasks = tasks.filter(last_modified__gte = date_n_ago)
                 print 'post time 2:'
                 print tasks
@@ -256,15 +264,26 @@ def search(request):
                 print 'post time 3:'
                 print tasks
         print 'post all filters'
-        tasks = tasks.order_by('-last_modified')
-        paginator = Paginator(tasks, 5)
+        tasks_list = tasks.order_by('-last_modified')
+        size = tasks_list.count
+        paginator = Paginator(tasks_list, 2)
         try:
-            page = paginator.page(request.GET.get('page', 1))
+            tasks = paginator.page(request.GET.get('page', 1))
         except EmptyPage:
-            page = paginator.page(paginator.num_pages)
-        except Exception:
-            page = paginator.page(1)
-        return render_to_response('tasks.html', {'tasks':tasks, 'page':page}, context_instance = RequestContext(request))
+            tasks = paginator.page(paginator.num_pages)
+        except PageNotAnInteger:
+            tasks = paginator.page(1)
+        print request.get_full_path()
+        criteria = request.get_full_path().split('/')[-1] #to preserve get search params when paginating
+        print criteria
+        last_param =  criteria.split('&')[-1]
+        print last_param
+        if last_param[:4] == 'page':
+            print 'in if'
+            criteria = criteria.split('&')[:-1]
+            criteria = '&'.join(criteria)
+        print 'final url: ' + criteria
+        return render_to_response('tasks.html', {'tasks':tasks, 'size':size, 'criteria':criteria}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
@@ -340,15 +359,16 @@ def fieldUser(request, id):
 def fieldUsers(request):
     if not isSupervisor(request.user):
         return HttpResponse("403. nie masz uprawnien do interfejsu www.", status = 403)
-    fieldusers = FieldUserProfile.objects.all()
-    paginator = Paginator(fieldusers, 10)
+    fieldusers_list = FieldUserProfile.objects.all()
+    paginator = Paginator(fieldusers_list, 10)
+    size = fieldusers_list.count
     try:
-        page = paginator.page(request.GET.get('page', 1))
+        fieldusers = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except (Exception, e):
-        page = paginator.page(1)
-    return render_to_response('fieldusers.html', {'fieldusers':fieldusers, 'page':page}, context_instance = RequestContext(request))
+        fieldusers = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        fieldusers = paginator.page(1)
+    return render_to_response('fieldusers.html', {'fieldusers':fieldusers, 'size':size}, context_instance = RequestContext(request))
 
 
 @login_required(login_url='/login/')
@@ -391,23 +411,24 @@ def workTime(request, id):
     except User.DoesNotExist:
         return HttpResponse(status = 404)
     worktimes_base = WorkDay.objects.filter(fieldUser = field_user).order_by('-day')
-    worktimes = list()
+    size = worktimes_base.count
+    worktimes_list = list()
     for e in worktimes_base:
         sum = e.finish-e.start
         print sum
         e = {'day':e.day, 'start': e.start.time, 'finish': e.finish.time, 'sum':str(sum)}
-        worktimes.append(e)
-    paginator = Paginator(worktimes, 10)
+        worktimes_list.append(e)
+    paginator = Paginator(worktimes_list, 1 )
     try:
-        page = paginator.page(request.GET.get('page', 1))
+        worktimes = paginator.page(request.GET.get('page', 1))
     except EmptyPage:
-        page = paginator.page(paginator.num_pages)
-    except Exception:
-        page = paginator.page(1)
+        worktimese = paginator.page(paginator.num_pages)
+    except PageNotAnInteger:
+        worktimes = paginator.page(1)
     return render_to_response('work_times.html', {
         'worktimes': worktimes,
         'field_user':field_user,
-        'page':page},
+        'size':size},
         context_instance = RequestContext(request))
 
 
