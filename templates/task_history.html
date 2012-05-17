@@ -3,13 +3,14 @@
 {% block title %} Supervisor: historia dla {{task.name}} {% endblock %}
 	{% block minor_title %}Historia zmian zadania{% endblock %}
 {% block user_main_content %}
+	{% load custom_filters %}
 	<div class="centered_description">Historia zmian dla <a href="/tasks/{{task.pk}}">{{task.name}}</a>:<br><br></div>
            <div style="padding: 10px;]">			
            		<table class="table table-bordered table-condensed table-striped">
 				<thead><tr>
 					<th>Stan po edycji</th>
 					<th>Czy zmieniono treść</th>
-					<th>Zmienione przez</th>
+					<th>Zmianę wykonał</th>
 					<th>Czas zmiany</th>
 					<th>Długość</th>
 					<th>Szerokość</th>
@@ -17,7 +18,7 @@
 			<tbody>
            		{% for task_history in tasks_history.object_list %}				
            			<tr>
-					<td>{{task_history.state_changed_to}}</td>
+					<td>{{task_history.state_changed_to|state_string}}</td>
 					<td>
 					{% if task_history.content_edited %}
 						Tak
@@ -25,7 +26,10 @@
 						Nie
 					{% endif %}
 					</td>
-					<td>{{task_history.user_editor}}</td>
+					<td>{% if not task_history.user_editor.fieldUser %}{{task_history.user_editor}}
+						{% else %}
+							<a href="/field_user/{{task_history.user_editor.pk}}">{{task_history.user_editor}}</a>
+					{% endif %}</td>
 					<td>{{task_history.change_time}}</td>
 					<td>{% if task_history.change_latitude %}
 						{{task_history.change_latitude}}
@@ -48,7 +52,7 @@
 
 				{% if tasks_history.has_previous %} 
 				<li >
-				    <a href="?page={{ tasks_history.next_page_number }}"><i class="icon-arrow-left"></i></a>
+				    <a href="?page={{ tasks_history.previous_page_number }}"><i class="icon-arrow-left"></i></a>
 				</li>
 				{% else %}
 				<li class="disabled">

@@ -54,7 +54,7 @@ class Task(models.Model):
         if self.version == 1:
             self.updateTaskHistory(self.state, True,
                 self.supervisor, datetime.datetime.now(),
-                u"zadanie zostalo utworzone przez użytkownika \"" + self.supervisor.username + "\"")
+                u"zadanie zostalo utworzone")
     
     def __unicode__(self):
         return self.name + " " + str(self.latitude) + " " + str(self.longitude)

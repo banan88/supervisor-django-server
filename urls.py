@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^work_time/(?P<id>\d+)/$', 'main_app.views.workTime'),
     url(r'^new_task/$', 'main_app.views.newTask'),
     url(r'^search_user/$', 'main_app.views.searchUser'),
+    url(r'^403/$', 'main_app.views.err403'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),

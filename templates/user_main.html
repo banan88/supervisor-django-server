@@ -24,33 +24,33 @@
                			<thead>
                				<th>Symbol</th>
                				<th>Stan zadań</th>
-               				<th>Liczba</th>
+               				<th>Ilość</th>
                				<th>Podgląd</th>
                			</thead>
                			<tbody>
 		               		<tr>
 		               		<td><img src="{{STATIC_URL}}img/current.png"/></td>
-		               		<td>Aktywne:</td><td>{{tasks_current}}
+		               		<td>Aktywne</td><td>{{tasks_current}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=2&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
 		               		<td><img src="{{STATIC_URL}}img/clock.png"/></td>
-		               		<td>Oczekujące:</td><td>{{tasks_pending}}
+		               		<td>Oczekujące</td><td>{{tasks_pending}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=1&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
 		               		<td><img src="{{STATIC_URL}}img/done.png"/></td>
-		               		<td>Wykonane:</td><td>{{tasks_done}}
+		               		<td>Wykonane</td><td>{{tasks_done}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=3&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
 		               		<td><img src="{{STATIC_URL}}img/cancel.png"/></td>
-		               		<td>Anulowane:</td><td>{{tasks_cancelled}}
+		               		<td>Anulowane</td><td>{{tasks_cancelled}}
 		               		</td><td><a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=0&time=4">Wyświetl</a></td>
 		               		</tr>
 		               		<tr>
 		               		<td></td>
-		               		<td>Łącznie:</td><td>{{tasks_created}}</td><td>
+		               		<td>Łącznie</td><td>{{tasks_created}}</td><td>
 		               		<a class="btn" href="/search/?name=&user=&super={{request.user.username}}&state=4&time=4">Wyświetl</a></td>
 		               		</tr>
                			</tbody>
