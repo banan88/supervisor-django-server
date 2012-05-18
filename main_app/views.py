@@ -289,30 +289,42 @@ def search(request):
 @login_required(login_url='/login/')
 def saveTask(request, task_id):
     if not isSupervisor(request.user):
+        print 'lol0'
         return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
+        print 'lol'
         try:
             task = Task.objects.get(pk=task_id)
         except Task.DoesNotExist:
             return HttpResponse(status = 400)
         json = request.POST
+        print 'lol2'
         try:
             lat = Decimal(json.__getitem__("task_lat"))
             lon = Decimal(json.__getitem__("task_lon"))
         except ValueError:
             return HttpResponse(status = 400)
+        if (lat > 85 or lat < -85) or (lon > 180 or lon < -180):
+                return HttpResponse(status = 400)
+        print 'lol3'
         name = json.__getitem__("task_name")
         desc = json.__getitem__("task_desc")
         t_user = json.__getitem__("task_user")
         state = json.__getitem__("task_state")
         was_edited = False
         tag = ""
+        try:
+            new_user = User.objects.get(username = t_user)
+            print 2
+            FieldUserProfile.objects.get(user = new_user)
+        except (User.DoesNotExist, FieldUserProfile.DoesNotExist):
+            return HttpResponse(status = 400)
         print task.longitude
         print lon
         print task.description
         print desc
-        print name
-        print task.name
+        print "name: " + name
+
         if task.latitude != lat or \
         task.longitude != lon or \
         task.description != desc \
@@ -323,24 +335,23 @@ def saveTask(request, task_id):
             task.name = name
             was_edited = True
             tag = "zmieniono treść zadania. "
-
+        print 11
         if state != task.state:
             task.state = state
             print state
             print task.state
             tag += "zmieniono stan zadania na \"%s\". " % (DESCRIPTIONS[str(state)])
             print 'hee'
+        print 12
+        if new_user != task.fieldUser:
+            task.fieldUser = new_user
+            tag += "zmieniono wykonawcę zadania na %s. " %(new_user)
+        print 13
         try:
-            user = User.objects.get(username = t_user)
-            print 2
-            FieldUserProfile.objects.get(user = user)
-            if user != task.fieldUser:
-                task.fieldUser = user
-                tag += "zmieniono wykonawcę zadania na %s. " %(user)
-        except (User.DoesNotExist, FieldUserProfile.DoesNotExist):
+            task.save()
+        except (InvalidOperation, Exception):
             return HttpResponse(status = 400)
-        task.save()
-        print "ok"
+            
         print "tag:" + tag
         print "was_edited" + str(was_edited)
         if was_edited or tag != "":
@@ -354,6 +365,12 @@ def saveTask(request, task_id):
 
 def err403(request):
     return render_to_response('403.html', {}, context_instance = RequestContext(request))
+
+def add_user(request):
+    if(request.user.is_staff):
+        return HttpResponseRedirect('/admin/main_app/fielduserprofile/add/');
+    else:
+        return render_to_response('non_staff_user.html', {}, context_instance = RequestContext(request));
 
 
 @login_required(login_url='/login/')

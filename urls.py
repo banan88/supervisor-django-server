@@ -28,6 +28,7 @@ urlpatterns = patterns('',
     url(r'^new_task/$', 'main_app.views.newTask'),
     url(r'^search_user/$', 'main_app.views.searchUser'),
     url(r'^403/$', 'main_app.views.err403'),
+    url(r'^add_user/$', 'main_app.views.add_user'),
 
     
     (r'^login/$',  login, {'template_name': 'login.html'}),

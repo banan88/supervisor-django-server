@@ -1,12 +1,19 @@
 {% extends 'base.html' %}
 
-{% block title %} Supervisor: 404 {% endblock %}
+{% block title %} Supervisor: Błąd 404 {% endblock %}
 
 {%block content%}
 	<div class="separator"></div>
 	<div class="separator"></div>
 	<div class="separator"></div>
-	<div class="content span6 offset3 centered_description alert alert-error">
-     <h1>Błąd 404. Nie odnaleziono strony.</h1>
-    </div>
+    
+    <div class="center_vertical">
+			<div class="alert alert-error single_content_center content">
+                <div class="centered_description large_font ">
+                	<br>
+					<h1>Błąd 404. Nie odnaleziono strony.</h1>
+                </div>
+			</div>
+			<div class="separator"></div>
+			</div>
 {%endblock%}

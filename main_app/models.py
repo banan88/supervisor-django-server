@@ -2,19 +2,26 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.forms import ModelForm, Textarea
+from django import forms
 import datetime
 
 #profil pracownika terenowego powiazany z obiektem usera (nadzorca ma jest po prostu userem, bez profilu)
 
 class FieldUserProfile(models.Model): 
-    user = models.OneToOneField(User)
-    last_latitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8)
-    last_longitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8)
-    imei_number = models.CharField(max_length = 30, blank = True, null = True)
-    phone_numer = models.CharField(max_length = 20, blank = True, null = True)
-    home_adress = models.CharField(max_length = 50, blank = True, null = True)
-    sync_time = models.DateTimeField(blank = True, null = True)
+    user = models.OneToOneField(User, verbose_name="Konto użytkownika")
+    last_latitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8, verbose_name="Ostatnia szerokość geograficzna")
+    last_longitude = models.DecimalField(blank = True, null = True, max_digits=11, decimal_places=8, verbose_name="Ostatnia długość geograficzna")
+    imei_number = models.CharField(max_length = 30, blank = True, null = True, verbose_name="Numer IMEI telefonu")
+    phone_numer = models.CharField(max_length = 20, blank = True, null = True, verbose_name="Kontaktowy numer telefonu")
+    home_adress = models.CharField(max_length = 50, blank = True, null = True, verbose_name="Adres domowy")
+    sync_time = models.DateTimeField(blank = True, null = True, verbose_name="Czas ostatniej synchronizacji")
+
+    class Meta:
+        verbose_name = "Profil użytkownika mobilnego"
+        verbose_name_plural = "Profile użytkowników mobilnych"
+
+    def __unicode__(self):
+        return self.user.username + ", lokalizacja: (%s, %s)" %(str(self.last_latitude or "brak") , str(self.last_latitude or "brak"))
 
 STATES = (
         ('3', 'Wykonane'),
@@ -86,8 +93,15 @@ class UserLocation(models.Model):
 
 #### FORMS ####
 
-class TaskForm(ModelForm):
+class TaskForm(forms.ModelForm):
+    latitude = forms.DecimalField(max_value = 85, min_value = -85)
+    longitude = forms.DecimalField(max_value = 180, min_value = -180)
     class Meta:
         model = Task
+
         fields = ['name','fieldUser', 'state', 'description', 'latitude', 'longitude']
+        widgets = {
+            'latitude': forms.TextInput(attrs={'id':'inputlat',}),
+            'longitude': forms.TextInput(attrs={'id':'inputlon',}),
+        }
   

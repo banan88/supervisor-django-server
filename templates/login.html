@@ -1,19 +1,24 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %} Supervisor: Zaloguj {% endblock %}
+{% block title %} Supervisor: Logowanie {% endblock %}
 
-	{% block content %}
-            
-         <div class="container-fluid">
-            <div class="separator" ></div></div><div class="separator" ></div><div class="separator" ></div><div class="separator" ></div>
-           <div class="content span6 offset4 centered_description">
-                        {% if form.errors %}
+{%block content%}
+	<div class="separator"></div>
+	<div class="separator"></div>
+	<div class="separator"></div>
+    
+    <div class="center_vertical">
+			<div style="height: 350px; width: 600px;"class="single_content_center content centered_description">
+			
+                {% if form.errors %}
             <br>
 			<ul class="errorlist">
+			<br>
 		    <li><div class="alert alert-error">Zła nazwa użytkownika lub hasło.<i class="icon-remove icon-white"></i></div></li>
 			</ul>
-		  {% endif %}
-
+		  	{% else %}
+			<br><br><br><br>
+			{% endif %}
              <form action="" method="post">
 		          {% csrf_token %}
 		            <br><label for="username">Nazwa użytkownika:</label><br>
@@ -29,10 +34,9 @@
 				        {% endif %}
 			        />
 	        </form>
-          </div>
-        </div></div><div class="separator" ></div><div class="separator" ></div><div class="separator" ></div>
-        </div><div class="separator" ></div><div class="separator" ></div>
-  	{% endblock %}
-
+			</div>
+			<div class="separator"></div>
+			</div>
+{%endblock%}
 
 

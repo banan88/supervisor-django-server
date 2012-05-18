@@ -9,33 +9,33 @@
               <fieldset>
                   <label class="control-label" for="inputname">{{ tf.name.label }}</label>
                   <div class="controls">
-                    {{ tf.name }} {{tf.name.errors}}	
+                    {{ tf.name }} {%if tf.name.errors %} <div style="width: 50%;"class="alert"> {{tf.name.errors}} </div> {% endif %}
                   </div><br>
                     <div class="control-group">
                   <label class="control-label" for="inputuser">{{ tf.fieldUser.label }}</label> 
                   <div class="controls">
-                    {{ tf.fieldUser }} {{tf.fieldUser.errors}}
+                    {{ tf.fieldUser }} {%if tf.fieldUser.errors %} <div style="width: 50%;"class="alert"> {{tf.fieldUser.errors}} </div> {% endif %}
                   </div>
                    <br> 
                   <label class="control-label" for="selectstate">{{ tf.state.label }}</label>
                   <div class="controls">
-                    {{tf.state}} {{tf.state.errors}}
+                    {{tf.state}}  {%if tf.state.errors %} <div style="width: 50%;"class="alert"> {{tf.state.errors}} </div> {% endif %}
                   </div>
                 <br> 
                   <label class="control-label" for="inputdesc">{{ tf.description.label }}</label>
                   <div class="controls">
-                    {{tf.description }} {{tf.description.errors}}
+                    {{tf.description }}  {%if tf.description.errors %} <div style="width: 50%;"class="alert"> {{tf.description.errors}} </div> {% endif %}
                   </div>
                  <br> 
                   <label class="control-label" for="inputlat">{{tf.latitude.label}}</label>
                   <div class="controls">
-                    {{tf.latitude}} {{tf.latitude.errors}}
+                    {{tf.latitude}} {%if tf.latitude.errors %} <div style="width: 50%;"class="alert"> {{tf.latitude.errors}} </div> {% endif %}
                   </div>
                 <br> 
                   <label class="control-label" for="inputlon">{{tf.longitude.label}}</label>
                   <div class="controls"> 
-                    {{tf.longitude}} {{tf.longitude.errors}}
-                    <br><a class ="btn" id="refresh"><i class="icon-refresh"></i> Odśwież mapę</a>
+                    {{tf.longitude}} {%if tf.longitude.errors %} <div style="width: 50%;"class="alert"> {{tf.longitude.errors}} </div> {% endif %}
+                    <a class ="btn" id="refresh"><i class="icon-refresh"></i> Odśwież mapę</a>
                   </div>
                 </div>
               </fieldset>
@@ -43,6 +43,8 @@
                <p><input id="save_task" class="btn btn-success" type="submit" value="Dodaj"/></p>
               </div>
              </form>
-
+			<div class="well" id="map_wrap">
+                <div id="map"></div>
+            </div>
              
 {% endblock %} 

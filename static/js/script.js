@@ -412,6 +412,7 @@ $(document).ready(function () {
   $('#refresh').click(function(){
 	  var lat = $('#inputlat').val();
   	  var lon = $('#inputlon').val();
+  	  alert(lat + " " + lon);
   	  name = $('#inputname').val();
 	  mapsutil.initMap(lat, lon);
 	  mapsutil.clearPolilines();
