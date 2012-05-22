@@ -31,11 +31,11 @@
                   <div class="controls">
                     {{tf.latitude}} {%if tf.latitude.errors %} <div style="width: 50%;"class="alert"> {{tf.latitude.errors}} </div> {% endif %}
                   </div>
-                <br> 
+                <br> {{tf.latitude.id}}
                   <label class="control-label" for="inputlon">{{tf.longitude.label}}</label>
                   <div class="controls"> 
                     {{tf.longitude}} {%if tf.longitude.errors %} <div style="width: 50%;"class="alert"> {{tf.longitude.errors}} </div> {% endif %}
-                    <a class ="btn" id="refresh"><i class="icon-refresh"></i> Odśwież mapę</a>
+                    <a class ="btn task_users" id="refresh"><i class="icon-refresh"></i> Odśwież mapę</a>
                   </div>
                 </div>
               </fieldset>

@@ -292,7 +292,6 @@ def saveTask(request, task_id):
         print 'lol0'
         return HttpResponse(status = 403)
     if request.is_ajax() and request.method == "POST":
-        print 'lol'
         try:
             task = Task.objects.get(pk=task_id)
         except Task.DoesNotExist:
@@ -302,7 +301,7 @@ def saveTask(request, task_id):
         try:
             lat = Decimal(json.__getitem__("task_lat"))
             lon = Decimal(json.__getitem__("task_lon"))
-        except ValueError:
+        except Exception:
             return HttpResponse(status = 400)
         if (lat > 85 or lat < -85) or (lon > 180 or lon < -180):
                 return HttpResponse(status = 400)
@@ -311,6 +310,8 @@ def saveTask(request, task_id):
         desc = json.__getitem__("task_desc")
         t_user = json.__getitem__("task_user")
         state = json.__getitem__("task_state")
+        if name == "" or desc == "":
+            return HttpResponse(status = 400)
         was_edited = False
         tag = ""
         try:
@@ -351,7 +352,7 @@ def saveTask(request, task_id):
             task.save()
         except (InvalidOperation, Exception):
             return HttpResponse(status = 400)
-            
+
         print "tag:" + tag
         print "was_edited" + str(was_edited)
         if was_edited or tag != "":
@@ -428,6 +429,31 @@ def loadPath(request, id):
             tmp = {'timestamp':str(l.timestamp), 'lat':str(l.latitude), 'lon':str(l.longitude)}
             location_list.append(tmp)
         json = simplejson.dumps(location_list)
+        print json
+        return HttpResponse(json, mimetype='application/json')
+
+@login_required(login_url='/login/')
+def loadUserLocations(request):
+    if not isSupervisor(request.user):
+        return HttpResponse(status = 403)
+    if request.is_ajax() and request.method == "POST":
+        field_users = FieldUserProfile.objects.all()
+        location_data = []
+        for fu in field_users:
+            try:
+                location = UserLocation.objects.filter(user = fu.user)
+                location = location.order_by('-timestamp')[0]
+                print location.user
+            except (UserLocation.DoesNotExist, IndexError):
+                continue
+            location_dict = {}
+            location_dict['lat'] = str(location.latitude)
+            location_dict['lon'] = str(location.longitude)
+            location_dict['user'] = fu.user.username
+            print location_dict
+            location_data.append(location_dict)
+        print location_data
+        json = simplejson.dumps(location_data)
         print json
         return HttpResponse(json, mimetype='application/json')
 

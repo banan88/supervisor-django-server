@@ -45,6 +45,10 @@ class Task(models.Model):
     supervisor = models.ForeignKey(User, related_name = 'user_set')                                        #nadzorca
     version = models.IntegerField(default = 0)                   #na podstawie tej wartosci przeprowadzana jest synchronizacja
 
+    class Meta:
+        verbose_name = "Zadanie"
+        verbose_name_plural = "Zadania"
+
     def updateTaskHistory(self, new_state, was_content_edited, user, timestamp, tag):
         updatedHistory = TaskStateHistory(task = self,
                                           state_changed_to = new_state,
@@ -78,6 +82,9 @@ class TaskStateHistory(models.Model):
     change_latitude = models.DecimalField(null = True, max_digits=11, decimal_places=8) #coodinates where change was made
     change_longitude = models.DecimalField(null = True, max_digits=11, decimal_places=8)
 
+    class Meta:
+        verbose_name = "Historia zmian zadania"
+        verbose_name_plural = "Historie zmian zadań"
  
 class WorkDay(models.Model):
     fieldUser = models.ForeignKey(User)
@@ -85,23 +92,32 @@ class WorkDay(models.Model):
     start = models.DateTimeField()
     finish = models.DateTimeField()
 
+    class Meta:
+        verbose_name = "Dzień pracy"
+        verbose_name_plural = "Kalendarze czasu pracy"
+
 class UserLocation(models.Model):
     user = models.ForeignKey(User)
     latitude = models.DecimalField(max_digits=11, decimal_places=8)
     longitude = models.DecimalField(max_digits=11, decimal_places=8)
     timestamp = models.DateTimeField()
 
+    class Meta:
+        verbose_name = "Lokalizacja użytkownika"
+        verbose_name_plural = "Lokalizacje użytkowników"
+
+
 #### FORMS ####
 
 class TaskForm(forms.ModelForm):
-    latitude = forms.DecimalField(max_value = 85, min_value = -85)
-    longitude = forms.DecimalField(max_value = 180, min_value = -180)
+    latitude = forms.DecimalField(max_value = 85, min_value = -85, widget=forms.TextInput(attrs={'id':'inputlat',}))
+    longitude = forms.DecimalField(max_value = 180, min_value = -180, widget=forms.TextInput(attrs={'id':'inputlon',}))
+    state = forms.ChoiceField(choices = STATES, widget=forms.Select( attrs={'id':'selectstate',}))
+    latitude.label = "Szerokość geograficzna"
+    longitude.label = "Długość geograficzna"
+    
     class Meta:
         model = Task
-
         fields = ['name','fieldUser', 'state', 'description', 'latitude', 'longitude']
-        widgets = {
-            'latitude': forms.TextInput(attrs={'id':'inputlat',}),
-            'longitude': forms.TextInput(attrs={'id':'inputlon',}),
-        }
+
   

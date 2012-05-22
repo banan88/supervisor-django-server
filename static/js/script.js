@@ -199,6 +199,30 @@ var mapsutil = {
 		mapsutil.polylinesArray.push(Polyline_Path);
     	}
     },
+    	
+    	showUsers: function(array) {
+        	if(array.length > 0) {
+    	    	//mapsutil.initMap(array[0]['lat'], array[0]['lon']);
+    	    	var img = '/static/img/me.png';
+    		for (elem in array){
+    	    		var marker = new google.maps.Marker({
+    	    	        position: new google.maps.LatLng(parseFloat(array[elem].lat),  parseFloat(array[elem].lon)),
+    	    	        icon: img,
+    	    	        map: default_map,
+    	    	        title: array[elem].user,
+    	    	        content: elem,
+    	    	      });
+    	    		mapsutil.markersArray.push(marker);
+    	    		var infowindow = new google.maps.InfoWindow();
+    	    		google.maps.event.addListener(marker, 'click', (function(marker, text) {
+    	    		        return function() {
+    	    				infowindow.setContent(text);
+    	    		        infowindow.open(default_map, marker);
+    	    		        }
+    	    		      })(marker, marker.position + " <br>" + marker.title));
+    	    	}
+        	}
+    },
 };
 
 var ajax = {
@@ -245,6 +269,7 @@ var ajax = {
                  statusCode: {
                     400: function() {
                         alert("podano niepoprawne wartości!\n Nie zapisano zmian!");
+                        window.location.reload( false );
                     },
                     404: function() {
                         alert("takie zadanie nie istnieje. \nNie zapisano zmian!");
@@ -281,6 +306,33 @@ var ajax = {
                },
                404: function() {
                    alert("takie zadanie nie istnieje. \nNie zapisano zmian!");
+               },
+               500: ajax.notifyOf500
+            }
+		});
+    },
+    
+    loadUsersLocations: function(onSuccess) {
+    	$.ajax({ type: "POST",   
+	         url: "/load_user_locations/",
+	         async: true,
+	         data: {},
+            dataType: "json",
+	         beforeSend: function(xhr){ xhr.setRequestHeader("X-CSRFToken", util.getCookie('csrftoken'));
+               if (xhr && xhr.overrideMimeType) {
+                   xhr.overrideMimeType("application/json;charset=UTF-8");
+               }
+            },
+	         success : function(return_data)
+	         {
+	        	 onSuccess(return_data);		  
+	         },
+            statusCode: {
+               400: function() {
+                   alert("niepoprawne uprawnienia!");
+               },
+               404: function() {
+                   alert("brak danych!");
                },
                500: ajax.notifyOf500
             }
@@ -412,12 +464,18 @@ $(document).ready(function () {
   $('#refresh').click(function(){
 	  var lat = $('#inputlat').val();
   	  var lon = $('#inputlon').val();
-  	  alert(lat + " " + lon);
   	  name = $('#inputname').val();
 	  mapsutil.initMap(lat, lon);
 	  mapsutil.clearPolilines();
 	  mapsutil.deleteOverlays();
-	  mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+	  if($(this).hasClass('task_users')) {
+		  mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+		  ajax.loadUsersLocations(mapsutil.showUsers);
+		  
+	  }
+	  else {
+		  mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+	  }
   });
   
   $('#searchuser').keyup(function(event) {
