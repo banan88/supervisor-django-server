@@ -1,5 +1,6 @@
 //utility functions
 
+
 var util = {
 	
 	//cookie, csrf forgery mechanism from django
@@ -204,7 +205,13 @@ var mapsutil = {
         	if(array.length > 0) {
     	    	//mapsutil.initMap(array[0]['lat'], array[0]['lon']);
     	    	var img = '/static/img/me.png';
+    	    	var lat = default_map.getCenter().lat();
+    	        var lng = default_map.getCenter().lng();
+    	        var R = 6371;
+    	        var distances = [];
+    	        var closest = -1;
     		for (elem in array){
+    			
     	    		var marker = new google.maps.Marker({
     	    	        position: new google.maps.LatLng(parseFloat(array[elem].lat),  parseFloat(array[elem].lon)),
     	    	        icon: img,
@@ -219,10 +226,33 @@ var mapsutil = {
     	    				infowindow.setContent(text);
     	    		        infowindow.open(default_map, marker);
     	    		        }
-    	    		      })(marker, marker.position + " <br>" + marker.title));
+    	    		      })(marker, marker.position + " <br>" + marker.title + " <br>" + array[elem].time));
+    	    		var mlat = parseFloat(array[elem].lat);
+    	            var mlng = parseFloat(array[elem].lon);
+    	            var dLat  = mapsutil.rad(mlat - lat);
+    	            var dLong = mapsutil.rad(mlng - lng);
+    	            var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    	                Math.cos(mapsutil.rad(lat)) * Math.cos(mapsutil.rad(lat)) * Math.sin(dLong/2) * Math.sin(dLong/2);
+    	            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    	            var d = R * c;
+    	            distances[elem] = d;
+    	            if ( closest == -1 || d < distances[closest] ) {
+    	                closest = elem;
+    	            }
     	    	}
+    		$("#closest").html(array[closest].user);
+    		$("#closest").click(function() {
+    			$("#id_fieldUser > option").each(function(){
+    				if(this.text === $("#closest").html())
+    					$(this).attr('selected', 'selected');
+    			});
+    		});
+    		//alert(array[closest].user);
         	}
     },
+    
+    rad : function(x) {return x*Math.PI/180;},
+
 };
 
 var ajax = {
@@ -434,7 +464,14 @@ $(document).ready(function () {
 	    mapsutil.initMap(lat, lon);
 	    mapsutil.clearPolilines();
 	    mapsutil.deleteOverlays();
-	    mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+	    if($("#refresh").hasClass('task_users')) {
+			  mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+			  ajax.loadUsersLocations(mapsutil.showUsers);
+			  
+		  }
+		  else {
+			  mapsutil.showLocation(lat, lon, mapsutil.chooseIcon(), name);
+		  }
 	}
   $('#edit_task').click(function(){
     $('#task-form :input ').not('#inputsuper').removeAttr('disabled');

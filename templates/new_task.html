@@ -13,8 +13,11 @@
                   </div><br>
                     <div class="control-group">
                   <label class="control-label" for="inputuser">{{ tf.fieldUser.label }}</label> 
+                  
                   <div class="controls">
-                    {{ tf.fieldUser }} {%if tf.fieldUser.errors %} <div style="width: 50%;"class="alert"> {{tf.fieldUser.errors}} </div> {% endif %}
+                    {{ tf.fieldUser }} <span class="help-block">Najbliższy użytkownik: 
+                    					<a id="closest" class="btn"></a></span>
+                    {%if tf.fieldUser.errors %} <div style="width: 50%;"class="alert"> {{tf.fieldUser.errors}} </div> {% endif %}
                   </div>
                    <br> 
                   <label class="control-label" for="selectstate">{{ tf.state.label }}</label>

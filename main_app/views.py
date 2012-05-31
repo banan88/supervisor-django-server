@@ -445,11 +445,13 @@ def loadUserLocations(request):
                 location = location.order_by('-timestamp')[0]
                 print location.user
             except (UserLocation.DoesNotExist, IndexError):
+                print 'err'
                 continue
-            location_dict = {}
+            location_dict = dict()
             location_dict['lat'] = str(location.latitude)
             location_dict['lon'] = str(location.longitude)
             location_dict['user'] = fu.user.username
+            location_dict['time'] = str(location.timestamp)
             print location_dict
             location_data.append(location_dict)
         print location_data
