@@ -246,7 +246,6 @@ var mapsutil = {
     					$(this).attr('selected', 'selected');
     			});
     		});
-    		//alert(array[closest].user);
         	}
     },
     
