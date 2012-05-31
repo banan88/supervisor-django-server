@@ -118,8 +118,7 @@ var mapsutil = {
 		    mapTypeId : google.maps.MapTypeId.ROADMAP,
 	    }
 	    
-	    default_map = new google.maps.Map($('#map').get(0), options);
-	    
+	    default_map = new google.maps.Map($('#map').get(0), options);	    
     },
     
     showLocation : function(lat, lon, image, text) {
