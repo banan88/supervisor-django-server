@@ -1,0 +1,21 @@
+commit 61f605e3ca22d40ad8519450da02be5b3f4139c0
+Author: Mateusz Banaszkiewicz <mat.banaszkiewicz@gmail.com>
+Date:   Thu May 31 20:38:16 2012 +0200
+
+    finished work on script.js?
+
+commit 8eccbb4e6a3a29c4c6d6f5f730f29550a2940c92
+Merge: 1625079 82a851c
+Author: Mateusz Banaszkiewicz <mat.banaszkiewicz@gmail.com>
+Date:   Thu May 31 20:34:17 2012 +0200
+
+    Merge branch 'master' into HEAD
+    
+    Conflicts:
+    	sqlite/database.db
+
+commit 16250791da8410ab644adaac3eb4efeaf385cf25
+Author: Mateusz Banaszkiewicz <mat.banaszkiewicz@gmail.com>
+Date:   Thu May 31 20:23:42 2012 +0200
+
+    closest task user with jquery onclick complete
